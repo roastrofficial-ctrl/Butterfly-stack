@@ -7,3 +7,6 @@
 [submodule "systems/harmonicdb"]
 	path = systems/harmonicdb
 	url = git@github.com:roastrofficial-ctrl/What-if-HarmonicDB.git
+[submodule "systems/passports"]
+	path = systems/passports
+	url = git@github.com:roastrofficial-ctrl/What-if-Auth-Passports.git

@@ -21,6 +21,8 @@ print()
 for role, spec in manifest["systems"].items():
     if spec["status"] == "counterfactual":
         print(f"{role.upper():18} {spec['implementation'].upper():28} {online(role, spec)}")
+    elif spec["status"] == "offline":
+        print(f"{role.upper():18} {spec['implementation'].upper():28} OFFLINE (NOT REQUIRED)")
 hosts = [spec for spec in manifest["systems"].values() if spec["status"] == "host_dependency"]
 counterfactual = [spec for spec in manifest["systems"].values() if spec["status"] == "counterfactual"]
 print(f"\nHOST DEPENDENCIES              {len(hosts)}")

@@ -1,0 +1,29 @@
+{
+  "wallet_version": "WALLET-1",
+  "credential": {
+    "credential_version": "PASSPORT-1",
+    "passport_number": "BP-82NZ-6MW6-3B4Y-RXNC-2",
+    "holder_name": "Ada Butterfly",
+    "mail_address": "ada@butterfly.local",
+    "holder_public_key": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAGHEqRzWC+RdDlpHJnFcsIYpP7lkr8Ld8N0t+Y55AOjg=\n-----END PUBLIC KEY-----\n",
+    "issuing_authority": "BPA/1",
+    "authority_key_id": "BPAK-TjRKbK3_V0dYfFHr",
+    "issued_at": "2026-08-12T14:37:33.716Z",
+    "expires_at": "2027-08-12T14:37:33.716Z",
+    "authority_signature": "IXG4PYfnOJbdwF3dLzwSmHwrV1ohlsWNhCRoCOugvVckQT0LQBIKVaxYCKyLz7NWjhXDxeb3nfZMikExwogSAg"
+  },
+  "protected_holder_key": {
+    "algorithm": "AES-256-GCM",
+    "kdf": {
+      "name": "scrypt",
+      "N": 16384,
+      "r": 8,
+      "p": 1,
+      "key_length": 32
+    },
+    "salt": "xCfOT1nuJwDCsozNvd6kMA",
+    "nonce": "a1EhTKckt9MwWQIp",
+    "ciphertext": "UwDiuicO5AiR2grwPQU3GtG7jwW6u41S_ihK47bqi33NswfRv1tRLuoyB8QKUXH0KGkuS_QZnTD3UxxEvT6jeVh5UPwEgx3ym8EC-CDARTSsqvzEfl2rntOiB4WrbubyB-IyIRfTZ6uEJzBp4yzMTyjtguracdI",
+    "auth_tag": "GIIrasQTPPeAjavmq7AaTw"
+  }
+}

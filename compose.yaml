@@ -36,6 +36,7 @@ services:
       GPSERVERS_URL: http://gpservers:8090
       HARMONICDB_URL: http://harmonicdb:8787
       HARMONICDB_TIMEOUT: "150"
+      PASSPORT_VERIFIER_URL: http://passport-verifier:8790
       MAILWEB_MAILPIT_URL: http://mailpit:8025
       MAILWEB_SMTP_HOST: mailpit
       MAILWEB_SMTP_PORT: "1025"
@@ -44,6 +45,8 @@ services:
       gpservers:
         condition: service_healthy
       harmonicdb:
+        condition: service_healthy
+      passport-verifier:
         condition: service_healthy
       mailpit:
         condition: service_healthy
@@ -69,13 +72,18 @@ services:
 
   mailweb:
     build:
-      context: ./systems/mailweb/apps/postbox
+      context: .
+      dockerfile: machine/postbox/Dockerfile
     command: ["--transport", "smtp", "--timeout", "180s", "--ui", "--listen", "0.0.0.0:9847", "mailweb://find-me.local/"]
     environment:
       MAILWEB_SMTP_ADDRESS: mailpit:1025
       MAILWEB_MAILPIT_URL: http://mailpit:8025
       MAILWEB_PUBLISHER_MAILBOX: find-me@butterfly.local
       MAILWEB_CONTAINER_LISTEN: "true"
+      POSTBOX_PASSPORT_WALLET: /postbox-data/holder.passport.json
+      POSTBOX_PASSPORT_AGENT: /passport/bin/holder-agent.js
+    volumes:
+      - postbox-data:/postbox-data
     ports:
       - "127.0.0.1:${MAILWEB_PORT:-9847}:9847"
     depends_on:
@@ -90,6 +98,24 @@ services:
       timeout: 3s
       retries: 12
       start_period: 5s
+
+  passport-verifier:
+    build:
+      context: ./systems/passports
+      dockerfile: Dockerfile.verifier
+    environment:
+      PASSPORT_SERVICE: find-me.local
+      PASSPORT_AUTHORITY_DOCUMENT: /trust/authority.json
+      PASSPORT_TRUST_KEY: /trust/authority-public.pem
+      PASSPORT_REVOCATIONS: /trust/revocations.json
+    volumes:
+      - ./machine/passport/trust:/trust:ro
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:8790/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
 
   mailpit:
     image: axllent/mailpit:v1.30.0
@@ -109,6 +135,7 @@ services:
     depends_on:
       harmonicdb: {condition: service_healthy}
       gpservers: {condition: service_healthy}
+      passport-verifier: {condition: service_healthy}
       find-me: {condition: service_healthy}
       mailweb: {condition: service_healthy}
     networks: [butterfly]
@@ -120,3 +147,4 @@ networks:
 
 volumes:
   harmonicdb-data:
+  postbox-data:

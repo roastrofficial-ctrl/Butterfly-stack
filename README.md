@@ -14,6 +14,20 @@ docker compose up --build
 
 Open <http://localhost:9847>. Postbox begins at `mailweb://find-me.local/`. Press **Acquire network fix**; the request and its eventual result travel as real MailWeb correspondence through SMTP. Acquisition may take up to two minutes because GPServers performs live network measurements.
 
+## Passport First Contact
+
+Find Me can also request a Butterfly Technical Passport while the issuing
+Authority is offline. Import [`demo/passport/ada.passport.json`](demo/passport/ada.passport.json)
+from Postbox's **Technical Passport** area (demo PIN: `butterfly`), then choose
+**Present Technical Passport** in Find Me. Consent and PIN entry occur in the
+green-bordered Postbox security UI; only the public credential and holder proof
+return through MailWeb.
+
+The committed Authority Document, public trust key and signed revocation
+snapshot under `machine/passport/trust` are **HOST TRUST CONFIGURATION**. The
+protected wallet is copied into Postbox's `postbox-data` **HOST STORAGE** volume.
+The Passport Authority itself is deliberately not a running Compose service.
+
 Mailpit's host inspection UI is at <http://localhost:8025>. The one-shot Stack Inspector prints its report into `docker compose logs inspector`.
 
 To exercise the vertical journey without the graphical renderer, use Postbox from the Compose network:

@@ -1,0 +1,10 @@
+{
+  "document_version": "REVOCATIONS-1",
+  "authority_id": "BPA/1",
+  "authority_key_id": "BPAK-TjRKbK3_V0dYfFHr",
+  "sequence": "311bc637-8547-4c3b-bac2-dbabcd89bd96",
+  "issued_at": "2026-08-12T14:37:33.637Z",
+  "next_update": "2026-08-13T14:37:33.637Z",
+  "revoked": [],
+  "authority_signature": "SrSVIW3WNsuKeYRghUQEjmM1mjgHYMTaBB9ZOodeqP6moirBcbT9YVD6XxweNgTYb1-17vyfYRhDLHLuejeaBQ"
+}

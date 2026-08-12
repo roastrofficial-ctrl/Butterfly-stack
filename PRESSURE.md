@@ -2,6 +2,51 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## Passport First Contact observations (before implementation)
+
+### Passport: the domain boundary survived its CLI
+
+- Finding: the Passport Authority already exports transport-independent `prove`, `verifyCredential`, and `ChallengeStore` APIs. The public credential is embedded in `WALLET-1`, while `protected_holder_key` remains private and is unlocked with scrypt/AES-256-GCM only for proof generation.
+- Pressure: Postbox is Go and Find Me is PHP, while the authoritative implementation is Node.js. Integration needs thin host adapters; copying Ed25519, canonicalization, wallet protection, or status logic into either consumer would create competing protocols.
+- Authority state: offline verification needs only a host-configured signed Authority Document, pinned public key, and the latest signed revocation document. The issuing Authority is not an authentication dependency.
+
+### MailWeb: native client behaviour was not expressible
+
+- Finding: MailWeb/0.5 is deliberately closed and declarative. Forms submit application-visible values; buttons only navigate. Neither can safely request local holder action.
+- Pressure: authentication requires the smallest generic primitive that says “invoke an explicitly named client capability, with public parameters, then POST its public result to this MailWeb action.” This is a generic client action, not a Passport-specific transport and not an extension framework.
+- Security boundary: a client action is rendered as Postbox-owned security UI. Ordinary MailWeb documents cannot create password/PIN inputs or receive the locally entered secret.
+- First collision: putting the authentication entry point in ordinary navigation allowed prEmail to request it speculatively, starting a short-lived challenge before holder intent. Find Me therefore exposes passport entry as a button, which the existing pre-mail policy deliberately does not follow. Future capability metadata may need explicit freshness/cache semantics.
+
+### Postbox: custody makes it a holder environment
+
+- Finding: Postbox currently owns only session navigation, stationery, enclosures and journey evidence. It has no extension mechanism or persistent user state.
+- Pressure: a passport wallet introduces explicitly labelled **HOST STORAGE** and local security UI. This is evidence that Postbox may be becoming a personal computing shell, but First Contact is too early to declare that architecture.
+- Constraint: decrypted holder material and the PIN must remain within the Postbox process boundary and must be excluded from correspondence, retained state, journeys and logs.
+
+### Find Me: authentication requires short-lived state
+
+- Finding: Find Me is otherwise stateless between MailWeb requests; its only durable application data is a `LocationRun` in HarmonicDB.
+- Pressure: one-time challenges require ephemeral pending/consumed state. Passport profiles, login history and authenticated positioning history are explicitly out of scope.
+- Service identity: `find-me.local` is selected because it is already the authority component of the real `mailweb://find-me.local/...` application identity. This is a local, minimal choice—not a Butterfly-wide naming system.
+
+### Butterfly trust and host dependencies
+
+- Trust bootstrap: Find Me's verifier receives a pinned Authority public key and signed Authority Document as **HOST TRUST CONFIGURATION**.
+- Revocation: verification uses the latest independently exported signed revocation document and reports its freshness; authentication never contacts the Authority.
+- **HOST TIME** determines credential validity, challenge lifetime and revocation freshness.
+- **HOST STORAGE** holds Postbox's protected wallet and the verifier's trust/revocation material.
+
+## Passport First Contact outcome
+
+- The existing Passport library boundary worked outside its CLI. Only thin stdin/HTTP host adapters were required; no cryptography was duplicated.
+- AUTH-1 challenge semantics survived asynchronous MailWeb correspondence, provided authentication entry is not speculatively pre-mailed.
+- `WALLET-1` maps coherently to Postbox custody: inspectable public credential plus protected holder material in local **HOST STORAGE**.
+- Verification required no live Authority state. It required pinned public trust material, a signed revocation snapshot, ephemeral one-time challenge state and **HOST TIME**.
+- MailWeb needed one generic `client_action` document primitive. The proof still returns as an ordinary correlated MailWeb POST; no Passport REST bypass was introduced.
+- Postbox is no longer merely a renderer. It now holds user state and owns trusted consent/unlock UI distinct from MailWeb content. This supports—but does not yet settle—the “personal computing shell” hypothesis.
+- Find Me learns a verified identity for one response only. It creates no account, profile, login history, position history, Visa or Entry Stamp.
+- The machine now demands explicit capability freshness/cache semantics, durable-but-recoverable holder storage design, trust/revocation distribution, and eventually non-host time. Those are v0.3+ pressures, not additions to v0.2.
+
 ## Resolved in 0.1: GPServers receiver assumed UI ownership
 
 - Assumption: a positioning run is started asynchronously by the bundled console and completed through an SSE broadcast.

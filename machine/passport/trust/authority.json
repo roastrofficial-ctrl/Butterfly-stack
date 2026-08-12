@@ -1,0 +1,16 @@
+{
+  "document_version": "AUTHORITY-1",
+  "authority_id": "BPA/1",
+  "authority_name": "Butterfly Passport Authority",
+  "authority_key_id": "BPAK-TjRKbK3_V0dYfFHr",
+  "public_verification_key": "-----BEGIN PUBLIC KEY-----\nMCowBQYDK2VwAyEAeUvmTGBlYDyZpk2/HB72vNOL4KPve71Of4ND1oiqIQs=\n-----END PUBLIC KEY-----\n",
+  "credential_protocol": "PASSPORT-1",
+  "authentication_protocol": "AUTH-1",
+  "supported_algorithms": [
+    "Ed25519",
+    "scrypt",
+    "AES-256-GCM"
+  ],
+  "valid_from": "2026-08-12T14:37:33.443Z",
+  "self_signature": "V8q0RnU4z96x7CYbs2sY4XEgXk2hQuJqH5I9yj9CWPy4xzgPxjnXXEZ6b6gZUUDiC-V9OAHgS0WKUfeh03naDg"
+}
