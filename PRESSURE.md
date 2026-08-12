@@ -2,6 +2,24 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v0.3.1 — Departmental Separation (before implementation)
+
+Postbox currently contains `passport.go`, embeds the Passport Node holder agent in its image, persists `/postbox-data/holder.passport.json`, validates `WALLET-1`, exposes passport inspect/import/remove endpoints, knows public credential fields, collects PINs, invokes Authority issuance, invokes AUTH-1 proof generation, and renders Passport-specific enrollment/presentation language. Compose gives it the wallet volume, Authority URL and Passport implementation files.
+
+| Current knowledge | Classification |
+| --- | --- |
+| Render a declared `client_action`, authorize it against the current document, and return its safe result | **SHOULD BELONG TO POSTBOX** / generic client-capability concern |
+| Map `identity.*` capabilities to one configured local provider over host IPC | **GENERIC CLIENT-CAPABILITY CONCERN** |
+| `WALLET-1` validation and storage path | **SHOULD BELONG TO PASSPORT SERVICE** |
+| Passport number, credential shape, Authority seal, wallet inspection/removal/import | **SHOULD BELONG TO PASSPORT SERVICE** |
+| PIN collection, confirmation, derivation and unlock | **SHOULD BELONG TO PASSPORT SERVICE** |
+| Holder key generation, private-key protection and enrollment state | **SHOULD BELONG TO PASSPORT SERVICE** |
+| AUTH-1 challenge signing and proof assembly | **SHOULD BELONG TO PASSPORT SERVICE** |
+| Consent/disclosure copy for identity enrollment/presentation | **SHOULD BELONG TO PASSPORT SERVICE**; Postbox may temporarily host the returned UI surface |
+| Authority issuance and revocation concepts | Authority certification belongs to **PASSPORT AUTHORITY**; holder-facing interpretation belongs to **PASSPORT SERVICE** |
+
+The correction target is therefore not merely another container. Postbox must lose wallet custody and Passport implementation imports. Its remaining seam should be: receive a generic capability request, ask a configured local provider for a trusted interaction description, relay opaque user input directly to that provider, and return only the provider's safe result to MailWeb.
+
 ## Passport First Contact observations (before implementation)
 
 ### Passport: the domain boundary survived its CLI
@@ -46,6 +64,96 @@ These are evolutionary pressures exposed when the three systems met, not automat
 - Postbox is no longer merely a renderer. It now holds user state and owns trusted consent/unlock UI distinct from MailWeb content. This supports—but does not yet settle—the “personal computing shell” hypothesis.
 - Find Me learns a verified identity for one response only. It creates no account, profile, login history, position history, Visa or Entry Stamp.
 - The machine now demands explicit capability freshness/cache semantics, durable-but-recoverable holder storage design, trust/revocation distribution, and eventually non-host time. Those are v0.3+ pressures, not additions to v0.2.
+
+## Passport Office observations (before implementation)
+
+### Issuance: the Stage I ceremony gave the Authority the PIN
+
+- Finding: `PassportAuthority.issuePassport()` creates the holder key and immediately protects it with a caller-supplied PIN. Its CLI therefore receives the holder secret during issuance.
+- Pressure: an Office form cannot safely preserve Postbox's trusted-input boundary if it invokes that API unchanged.
+- Required split: Postbox must generate and retain holder private material locally, send only the holder public key and public application details through MailWeb, receive an Authority-sealed credential, and finish `WALLET-1` protection locally. Authority signing remains independent from the user-facing Office.
+
+### MailWeb: issuance is a stateful native ceremony
+
+- Finding: v0.2 `client_action` assumes a native result can be produced immediately and POSTed once.
+- Pressure: enrollment needs a public-key application round trip followed by local installation. The smallest extension is another named client capability whose result remains an ordinary MailWeb POST; Postbox retains only a short-lived local enrollment key until the credential returns.
+
+### Postbox: multi-site state is not tab state
+
+- Finding: one `BrowserSession` owns one history cursor, although its archive can retain correspondence from many sites.
+- Pressure: real Find Me ↔ Passport Office movement now justifies multiple independent history cursors sharing one holder wallet, transport and correspondence archives. Treating archive entries as cosmetic tabs would not preserve application state honestly.
+
+### HarmonicDB: passport identity is symbolic while Waves are numeric
+
+- Finding: `LocationRun` values are numeric Waves and journey IDs are Domain coordinates. Passport numbers are symbolic identifiers.
+- Pressure: private history needs an exact identity association and filtered multi-coordinate observation. Encoding a passport number as an unverified floating-point hash would create collision and privacy ambiguity. HDB needs a native symbolic/indexable association or an equally explicit relationship construct before the Laravel model can offer an honest `forPassport()` query.
+
+## Passport Office & Immigration outcome
+
+### Passport Office and Authority
+
+- The Authority's issuance logic survived behind a small HTTP host adapter. Passport Office is a separate Laravel/MailWeb application and never imports Authority implementation or private state.
+- The public application—holder name and correspondence identity—travels through MailWeb. PIN entry occurs only in trusted Postbox chrome. Because the current `issuePassport()` contract still creates and encrypts the holder key, Postbox sends the PIN directly to the Authority adapter over the host integration network; it never enters Passport Office content, MailWeb correspondence, journey evidence or application logs.
+- This is the smallest safe adaptation, not the desired final ceremony. The machine still demands split issuance: holder key generation and wallet protection in Postbox, public-key credential signing in the Authority.
+- The protected `WALLET-1` response is consumed and installed directly by Postbox in **HOST STORAGE**. Only its public credential is posted back to the Office. A generic `technical-passport.apply` client action was enough; MailWeb did not gain a wallet-shaped enclosure.
+- Issuance is online-only. Authentication uses the verifier's mounted, signed Authority Document, pinned public key and revocation snapshot and remains independent of the live Authority process.
+
+### Postbox and multi-site MailWeb
+
+- SMTP routing is now selected by the `mailweb://` host, so `find-me.local` and `passport.local` remain distinct correspondents and applications while sharing one Postbox transport and holder environment.
+- Lightweight site tabs preserve each site's last MailWeb URI/document through the correspondence archive and allow switching and closing. They do not yet provide truly independent `BrowserSession` history cursors. The earlier pressure was correct: honest full tab state requires a deeper application-shell session model.
+- Local passport custody is now fundamental to the demo. Trusted apply/present actions collect secrets outside semantic content; ordinary documents can request the capability but cannot receive or render the PIN.
+- The journey inspector retains the public issuance credential and later public proof because those are the actual MailWeb POST bodies. It never retains the protected wallet or PIN. A future evidence policy may want selective redaction of public-but-identifying credentials.
+
+### Find Me immigration
+
+- Anonymous acquisition remains unchanged. Private routes require a short-lived entry token created only from a verified AUTH-1 result; a passport number from ordinary content or form input cannot select history.
+- Find Me creates no user record, password or login history. Its only durable private application state is the authenticated positioning observation in its own `find_me_private` HarmonicDB store.
+- Entry tokens currently live in the long-running MailWeb worker's memory. Restarting that application process clears immigration without affecting the portable passport or HDB history. Durable sessions would be a new host/application policy, not an identity requirement.
+
+### HarmonicDB private history
+
+- Dynamic Domain append was sufficient to file arbitrary authenticated run coordinates. The Laravel model needed a generic `all()` path implemented as a real HDB sweep followed by observations; `describe` exposes coordinate counts, not coordinate identities.
+- Symbolic ownership remains awkward. The current model projects 64 bits of a SHA-256 passport fingerprint into two numeric Waves and compares using the measured HWS float recovery tolerance. This yields roughly 46 effective matching bits in the present codec, avoids storing the public passport number verbatim, and is adequate for the experiment—but it is not an exact identity index.
+- Private history therefore performs a full owner-Wave sweep and per-coordinate observation. The next HDB contract should support exact symbolic values and indexed filtering/relationships instead of asking an application to turn identity into approximate measurements.
+
+### New and clarified host dependencies
+
+- **HOST TRUST** is a named read-only volume populated by the Authority and consumed by the verifier.
+- **HOST CRYPTOGRAPHY** remains Node's Ed25519, scrypt and AES-GCM implementation behind the Passport library; no consumer reimplemented it.
+- **HOST STORAGE** holds Authority private state, exported trust, Postbox's encrypted wallet and both application-owned HWS stores.
+- **HOST TIME** governs issuance, expiry, challenge lifetime, entry-token lifetime and revocation freshness. Butterfly still does not solve time.
+
+### What Butterfly now demands next
+
+Butterfly now demands two precise substrate improvements: a split Passport enrollment ceremony that never reveals the holder secret outside Postbox, and exact indexed symbolic association in HarmonicDB. Postbox's honest independent tab/session model is the emerging shell pressure behind them—not permission to build an operating system yet.
+
+## v0.3.1 — Departmental Separation (after implementation)
+
+- Postbox is again a correspondence client. It has no Passport implementation,
+  Authority address, wallet mount, credential parser, key operation or Passport
+  endpoint. It authorizes an exact capability/action pair from the current
+  document, asks the configured local provider for an interaction surface, and
+  returns only that provider's safe result.
+- Technical Passport Service is the holder environment. It alone generates and
+  protects the private key, receives the PIN, stores `WALLET-1`, and creates
+  `AUTH-1` proofs. The browser submits the secret directly to that service; it is
+  absent from MailWeb bodies, Postbox APIs and journey evidence.
+- Passport Office carries public application data and holder public material.
+  Passport Authority certifies the public key and never receives a secret.
+  Find Me requests generic `identity.present` and continues to verify through
+  its independent, offline-capable verifier.
+- Removing or stopping Passport Service removes identity capability but leaves
+  anonymous MailWeb navigation intact. Stopping Authority prevents new issuance
+  but does not prevent presentation and verification of an existing passport.
+- The residual host coupling is explicit: Postbox currently knows the configured
+  local capability-provider URL and hosts the provider-described form surface.
+  A future provider discovery/IPC contract could remove that deployment detail;
+  it does not give Postbox Passport custody or protocol knowledge.
+
+The earlier v0.3 observations below are retained as the history that produced
+this correction. References there to Postbox wallet custody describe the old
+design, not the v0.3.1 runtime.
 
 ## Resolved in 0.1: GPServers receiver assumed UI ownership
 

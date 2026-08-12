@@ -2,8 +2,11 @@
 
 use Illuminate\Support\Facades\Http;
 use App\Models\LocationRun;
+use App\Models\PrivateLocationRun;
 use MailWeb\Laravel\Facades\MailWeb;
 use MailWeb\Laravel\Http\MailWebRequest;
+
+$entries = [];
 
 $site = MailWeb::template('find-me/site', fn () => MailWeb::page('Find Me')
     ->presentation('#20B8CD', '#07141D', '#F4E9CE', '#102733', 'mono', 'spacious', 'soft')
@@ -11,6 +14,8 @@ $site = MailWeb::template('find-me/site', fn () => MailWeb::page('Find Me')
     ->nav('Find Me navigation', [
         ['Find me', '/'],
         ['The stack', '/stack'],
+        ['Private records', '/private'],
+        ['Present passport', '/passport'],
     ])
     ->slotPlaceholder('content')
     ->paragraph('No satellites. No GeoIP. No browser location. Just the Internet being asked a deeply unreasonable question.'));
@@ -25,7 +30,9 @@ MailWeb::get('/', function () use ($site) {
             ->heading('WHERE DOES THE INTERNET THINK YOU ARE?', variant: 'display')
             ->paragraph('A constellation of terrestrial servers will time the shape of the network, argue statistically about the evidence, and return a gloriously provisional position.')
             ->paragraph('Your device will not reveal its location. The network has to earn its answer.')
+            ->paragraph('Oh, and be patient - GPServers aren\'t quick.')
             ->button('Acquire network fix', '/locate', 'prominent')
+            ->button('Private positioning records', '/private')
             ->button('Present Technical Passport', '/passport'));
 });
 
@@ -44,7 +51,7 @@ MailWeb::get('/passport', function () use ($site) {
                 ->paragraph('find-me.local')
                 ->heading('Identity disclosed', level: 2)
                 ->paragraph('Passport number · mail address · holder identity · holder public key')
-                ->clientAction('Present Passport', 'technical-passport.present', '/passport/verify', [
+                ->clientAction('Present Passport', 'identity.present', '/passport/verify', [
                     'service' => 'find-me.local',
                     'challenge' => json_encode($challenge, JSON_THROW_ON_ERROR),
                 ], ['passport_number', 'mail_address', 'holder_name', 'holder_public_key'])
@@ -54,7 +61,7 @@ MailWeb::get('/passport', function () use ($site) {
     }
 });
 
-MailWeb::post('/passport/verify', function (MailWebRequest $request) use ($site) {
+MailWeb::post('/passport/verify', function (MailWebRequest $request) use ($site, &$entries) {
     try {
         $proof = $request->input('passport_proof');
         if (! is_array($proof)) {
@@ -70,16 +77,33 @@ MailWeb::post('/passport/verify', function (MailWebRequest $request) use ($site)
                 ->link('Continue anonymously', '/'));
         }
         $credential = $proof['credential'];
+        $entry = bin2hex(random_bytes(24)); $entries[$entry] = ['passport'=>$credential['passport_number'],'expires'=>time()+900];
         return MailWeb::page('Find Me — entry granted')->template($site)->slot('content', MailWeb::page('Entry granted')
             ->heading('ENTRY GRANTED', variant: 'display')
             ->paragraph('Passport '.$credential['passport_number'])
             ->paragraph('Mail identity '.$credential['mail_address'])
             ->paragraph('Authority seal VALID · holder proof VALID · audience VALID · challenge CONSUMED')
             ->paragraph('Revocation '.$result['status'].' · knowledge issued '.$result['revocation_knowledge'])
-            ->button('Acquire Network Fix', '/locate', 'prominent'));
+            ->button('Clear immigration', '/private?entry='.$entry, 'prominent'));
     } catch (Throwable $error) {
         return MailWeb::page('Find Me — entry denied', 403)->template($site)->slot('content', MailWeb::page('Entry denied')->heading('ENTRY DENIED', variant: 'display')->paragraph('The passport proof could not be verified.')->link('Request a fresh challenge', '/passport'));
     }
+});
+
+MailWeb::get('/private', function (MailWebRequest $request) use ($site, &$entries) {
+    $entry=(string)$request->query('entry'); $session=$entries[$entry]??null;
+    if(!$session || $session['expires']<time()) return MailWeb::page('Find Me — passport required',401)->template($site)->slot('content',MailWeb::page('Passport required')->heading('PRIVATE POSITIONING RECORDS',variant:'display')->paragraph('Technical Passport required.')->button('Present Passport','/passport','prominent')->button('Apply at Passport Office ↗','mailweb://passport.local/'));
+    $runs=PrivateLocationRun::forPassport($session['passport']);
+    $content=MailWeb::page('Private records')->heading('IMMIGRATION CLEARED',variant:'display')->paragraph('Passport '.$session['passport'])->button('Acquire authenticated network fix','/private/locate?entry='.$entry,'prominent')->heading('YOUR POSITIONING RUNS',level:2);
+    if($runs===[]) $content->paragraph('No authenticated positioning runs are on file.');
+    foreach(array_reverse($runs) as $run) { if($run->coordinate()==='BF:BOOTSTRAP') continue; $content->heading((string)$run->coordinate(),level:3)->paragraph(number_format($run->latitude,4).'°, '.number_format($run->longitude,4).'° · confidence '.number_format($run->confidence*100,1).'% · uncertainty ±'.number_format($run->uncertainty_km,1).' km'); }
+    return MailWeb::page('Find Me — private records')->template($site)->slot('content',$content);
+});
+
+MailWeb::get('/private/locate', function (MailWebRequest $request) use ($site, &$entries) {
+    $entry=(string)$request->query('entry'); $session=$entries[$entry]??null;
+    if(!$session || $session['expires']<time()) return MailWeb::page('Entry expired',401)->heading('PASSPORT REQUIRED')->link('Return to immigration','/passport');
+    try { $journey='BF:'.substr($request->id(),-12); $response=Http::timeout(150)->post(rtrim(env('GPSERVERS_URL','http://gpservers:8090'),'/').'/api/position',['correlation_id'=>$journey]); $response->throw(); $result=$response->json(); $fix=$result['fix']; $owner=PrivateLocationRun::owner($session['passport']); PrivateLocationRun::create($journey,[...$owner,'latitude'=>(float)$fix['latitude'],'longitude'=>(float)$fix['longitude'],'confidence'=>(float)$fix['confidence'],'uncertainty_km'=>(float)$fix['uncertainty_km']]); return MailWeb::page('Authenticated fix filed')->template($site)->slot('content',MailWeb::page('Filed')->heading('POSITIONING RUN FILED',variant:'display')->paragraph($journey.' is associated with the verified passport identity in HarmonicDB.')->button('Return to private records','/private?entry='.$entry,'prominent')); } catch(Throwable $e) { return MailWeb::page('No fix',503)->heading('NO FIX')->paragraph('No authenticated run was filed.')->link('Return','/private?entry='.$entry); }
 });
 
 MailWeb::get('/stack', function () use ($site) {

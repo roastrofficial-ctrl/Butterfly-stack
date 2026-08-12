@@ -3,7 +3,7 @@ name: butterfly
 services:
   harmonicdb:
     build: ./systems/harmonicdb
-    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; exec python -m harmonic.hdbe --store find_me=/data/find-me.hws --host 0.0.0.0 --port 8787"]
+    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; test -f /data/find-me-private.hws || python -m harmonic model-demo /data/find-me-private.hws --dataset find-me-private; exec python -m harmonic.hdbe --store find_me=/data/find-me.hws --store find_me_private=/data/find-me-private.hws --host 0.0.0.0 --port 8787"]
     volumes:
       - harmonicdb-data:/data
     networks: [butterfly]
@@ -79,16 +79,17 @@ services:
       MAILWEB_SMTP_ADDRESS: mailpit:1025
       MAILWEB_MAILPIT_URL: http://mailpit:8025
       MAILWEB_PUBLISHER_MAILBOX: find-me@butterfly.local
+      MAILWEB_PUBLISHER_MAP: find-me.local=find-me@butterfly.local,passport.local=passport-office@butterfly.local
       MAILWEB_CONTAINER_LISTEN: "true"
-      POSTBOX_PASSPORT_WALLET: /postbox-data/holder.passport.json
-      POSTBOX_PASSPORT_AGENT: /passport/bin/holder-agent.js
-    volumes:
-      - postbox-data:/postbox-data
     ports:
       - "127.0.0.1:${MAILWEB_PORT:-9847}:9847"
     depends_on:
       find-me-worker:
         condition: service_started
+      passport-office-worker:
+        condition: service_started
+      passport-service:
+        condition: service_healthy
       mailpit:
         condition: service_healthy
     networks: [butterfly]
@@ -109,13 +110,82 @@ services:
       PASSPORT_TRUST_KEY: /trust/authority-public.pem
       PASSPORT_REVOCATIONS: /trust/revocations.json
     volumes:
-      - ./machine/passport/trust:/trust:ro
+      - passport-trust:/trust:ro
+    depends_on:
+      passport-authority: {condition: service_healthy}
     networks: [butterfly]
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:8790/health"]
       interval: 5s
       timeout: 3s
       retries: 12
+
+  passport-authority:
+    build:
+      context: ./systems/passports
+      dockerfile: Dockerfile.authority
+    volumes:
+      - passport-authority-data:/authority
+      - passport-trust:/trust
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:8791/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  passport-service:
+    build:
+      context: ./systems/passports
+      dockerfile: Dockerfile.holder
+    environment:
+      PASSPORT_HOLDER_STORAGE: /holder
+      PASSPORT_UI_ORIGINS: http://localhost:${MAILWEB_PORT:-9847},http://127.0.0.1:${MAILWEB_PORT:-9847}
+    volumes:
+      - passport-holder-data:/holder
+    ports:
+      - "127.0.0.1:8792:8792"
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:8792/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  passport-office:
+    build:
+      context: .
+      dockerfile: apps/passport-office/Dockerfile
+    environment: &passport-office-environment
+      APP_ENV: local
+      APP_DEBUG: "false"
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      LOG_CHANNEL: stderr
+      MAILWEB_MAILPIT_URL: http://mailpit:8025
+      MAILWEB_SMTP_HOST: mailpit
+      MAILWEB_SMTP_PORT: "1025"
+      MAILWEB_PUBLISHER_MAILBOX: passport-office@butterfly.local
+      PASSPORT_AUTHORITY_URL: http://passport-authority:8791
+    depends_on:
+      passport-authority: {condition: service_healthy}
+      mailpit: {condition: service_healthy}
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "php", "artisan", "passport-office:health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  passport-office-worker:
+    build:
+      context: .
+      dockerfile: apps/passport-office/Dockerfile
+    command: ["php", "artisan", "mailweb:listen"]
+    environment: *passport-office-environment
+    depends_on:
+      passport-office: {condition: service_healthy}
+      mailpit: {condition: service_healthy}
+    networks: [butterfly]
 
   mailpit:
     image: axllent/mailpit:v1.30.0
@@ -136,6 +206,9 @@ services:
       harmonicdb: {condition: service_healthy}
       gpservers: {condition: service_healthy}
       passport-verifier: {condition: service_healthy}
+      passport-service: {condition: service_healthy}
+      passport-office: {condition: service_healthy}
+      passport-authority: {condition: service_healthy}
       find-me: {condition: service_healthy}
       mailweb: {condition: service_healthy}
     networks: [butterfly]
@@ -147,4 +220,6 @@ networks:
 
 volumes:
   harmonicdb-data:
-  postbox-data:
+  passport-holder-data:
+  passport-authority-data:
+  passport-trust:

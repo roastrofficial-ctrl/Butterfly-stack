@@ -1,12 +1,15 @@
 {
-  "machine": {"name": "Butterfly", "generation": "0.2"},
+  "machine": {"name": "Butterfly", "generation": "0.3.1"},
   "application": {"name": "Find Me", "health": "http://find-me:8000"},
   "systems": {
     "correspondence": {"implementation": "MailWeb", "status": "counterfactual", "health": "http://mailweb:9847/api/state"},
+    "client": {"implementation": "Postbox", "status": "counterfactual", "health": "http://mailweb:9847/api/state"},
     "positioning": {"implementation": "Global Positioning Servers", "status": "counterfactual", "health": "http://gpservers:8090/health"},
     "database": {"implementation": "HarmonicDB", "status": "counterfactual", "health": "http://harmonicdb:8787/info"},
-    "identity": {"implementation": "Technical Passport", "status": "counterfactual", "health": "http://passport-verifier:8790/health"},
-    "issuing_authority": {"implementation": "Butterfly Passport Authority", "status": "offline"},
+    "identity_verification": {"implementation": "Technical Passport Verifier", "status": "counterfactual", "health": "http://passport-verifier:8790/health"},
+    "holder_identity": {"implementation": "Technical Passport Service", "status": "counterfactual", "health": "http://passport-service:8792/health"},
+    "identity_application": {"implementation": "Passport Office", "status": "counterfactual", "health": "http://passport-office:8000/up"},
+    "issuing_authority": {"implementation": "Butterfly Passport Authority", "status": "counterfactual", "health": "http://passport-authority:8791/health"},
     "graphics": {"implementation": "host", "status": "host_dependency"},
     "storage": {"implementation": "host", "status": "host_dependency"},
     "time": {"implementation": "host", "status": "host_dependency"},

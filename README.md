@@ -16,17 +16,30 @@ Open <http://localhost:9847>. Postbox begins at `mailweb://find-me.local/`. Pres
 
 ## Passport First Contact
 
-Find Me can also request a Butterfly Technical Passport while the issuing
-Authority is offline. Import [`demo/passport/ada.passport.json`](demo/passport/ada.passport.json)
-from Postbox's **Technical Passport** area (demo PIN: `butterfly`), then choose
-**Present Technical Passport** in Find Me. Consent and PIN entry occur in the
-green-bordered Postbox security UI; only the public credential and holder proof
-return through MailWeb.
+The v0.2 import fixture remains under `demo/passport` as an historical protocol
+example. The v0.3.1 runtime creates its own persistent Authority and trust state;
+the clean demonstration is now to arrive without a wallet and obtain one from
+Passport Office. An independent Technical Passport Service owns the wallet,
+holder key and PIN interaction. Postbox hosts its green-bordered interaction
+surface but only routes the generic `identity.*` capability and its safe result.
+The PIN never reaches Postbox, MailWeb, Passport Office or the Authority.
 
-The committed Authority Document, public trust key and signed revocation
-snapshot under `machine/passport/trust` are **HOST TRUST CONFIGURATION**. The
-protected wallet is copied into Postbox's `postbox-data` **HOST STORAGE** volume.
-The Passport Authority itself is deliberately not a running Compose service.
+## Immigration
+
+Butterfly v0.3 begins without assuming an installed identity. Open **Private
+positioning records** in Find Me, follow the Passport Office link to
+`mailweb://passport.local`, submit only public application details, and complete
+issuance in the Passport Service's locally hosted UI. The Office, holder service,
+Authority, verifier and Find Me remain separate
+MailWeb applications. Authenticated fixes are filed in a dedicated HarmonicDB
+Domain and private history is selected from the verified passport identity.
+
+Issuance needs `passport-authority`; entry does not. After issuing a passport,
+run `docker compose stop passport-authority`, clear or restart Find Me's
+short-lived entry state, and present the passport again. The verifier continues
+from signed trust and revocation material in the read-only `passport-trust`
+volume. Start the Authority again with `docker compose start passport-authority`
+before another application.
 
 Mailpit's host inspection UI is at <http://localhost:8025>. The one-shot Stack Inspector prints its report into `docker compose logs inspector`.
 
@@ -36,12 +49,13 @@ To exercise the vertical journey without the graphical renderer, use Postbox fro
 docker compose run --rm mailweb --transport smtp --timeout 180s mailweb://find-me.local/locate
 ```
 
-## Butterfly 0.1
+## Butterfly 0.3
 
 ```text
 ✓ MailWeb
 ✓ Global Positioning Servers
 ✓ HarmonicDB
+✓ PassportOffice
 
 ○ Graphics
 ○ Storage
