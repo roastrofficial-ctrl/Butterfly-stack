@@ -1,0 +1,9 @@
+[submodule "systems/mailweb"]
+	path = systems/mailweb
+	url = git@github.com:roastrofficial-ctrl/What-if-MailWeb.git
+[submodule "systems/gpservers"]
+	path = systems/gpservers
+	url = git@github.com:roastrofficial-ctrl/What-if-GPS-ervers.git
+[submodule "systems/harmonicdb"]
+	path = systems/harmonicdb
+	url = git@github.com:roastrofficial-ctrl/What-if-HarmonicDB.git

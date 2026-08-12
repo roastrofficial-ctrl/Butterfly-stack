@@ -1,0 +1,28 @@
+{
+    "name": "butterfly/find-me",
+    "description": "The first Butterfly application: positioning by correspondence.",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^12.0",
+        "mailweb/laravel-mailweb": "dev-main",
+        "harmonicdb/laravel-harmonicdb": "dev-main"
+    },
+    "repositories": [
+        {"type": "path", "url": "../../systems/mailweb/packages/laravel-mailweb", "options": {"symlink": false}},
+        {"type": "path", "url": "../../systems/harmonicdb/packages/laravel-harmonicdb", "options": {"symlink": false}}
+    ],
+    "autoload": {
+        "psr-4": {"App\\": "app/"}
+    },
+    "scripts": {
+        "post-autoload-dump": ["@php artisan package:discover --ansi"]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

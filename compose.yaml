@@ -1,0 +1,122 @@
+name: butterfly
+
+services:
+  harmonicdb:
+    build: ./systems/harmonicdb
+    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; exec python -m harmonic.hdbe --store find_me=/data/find-me.hws --host 0.0.0.0 --port 8787"]
+    volumes:
+      - harmonicdb-data:/data
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,urllib.request; r=urllib.request.Request('http://127.0.0.1:8787/info',b'{}',{'Content-Type':'application/json'}); assert json.load(urllib.request.urlopen(r,timeout=3))['ok']"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+      start_period: 5s
+
+  gpservers:
+    build: ./systems/gpservers
+    command: ["receiver", "--addr", "0.0.0.0:8090"]
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:8090/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  find-me:
+    build:
+      context: .
+      dockerfile: apps/find-me/Dockerfile
+    environment: &publisher-environment
+      APP_ENV: local
+      APP_DEBUG: "false"
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      LOG_CHANNEL: stderr
+      GPSERVERS_URL: http://gpservers:8090
+      HARMONICDB_URL: http://harmonicdb:8787
+      HARMONICDB_TIMEOUT: "150"
+      MAILWEB_MAILPIT_URL: http://mailpit:8025
+      MAILWEB_SMTP_HOST: mailpit
+      MAILWEB_SMTP_PORT: "1025"
+      MAILWEB_PUBLISHER_MAILBOX: find-me@butterfly.local
+    depends_on:
+      gpservers:
+        condition: service_healthy
+      harmonicdb:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "php", "artisan", "find-me:health"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  find-me-worker:
+    build:
+      context: .
+      dockerfile: apps/find-me/Dockerfile
+    command: ["php", "artisan", "mailweb:listen"]
+    environment: *publisher-environment
+    depends_on:
+      find-me:
+        condition: service_healthy
+      mailpit:
+        condition: service_healthy
+    networks: [butterfly]
+
+  mailweb:
+    build:
+      context: ./systems/mailweb/apps/postbox
+    command: ["--transport", "smtp", "--timeout", "180s", "--ui", "--listen", "0.0.0.0:9847", "mailweb://find-me.local/"]
+    environment:
+      MAILWEB_SMTP_ADDRESS: mailpit:1025
+      MAILWEB_MAILPIT_URL: http://mailpit:8025
+      MAILWEB_PUBLISHER_MAILBOX: find-me@butterfly.local
+      MAILWEB_CONTAINER_LISTEN: "true"
+    ports:
+      - "127.0.0.1:${MAILWEB_PORT:-9847}:9847"
+    depends_on:
+      find-me-worker:
+        condition: service_started
+      mailpit:
+        condition: service_healthy
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:9847/api/state"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+  mailpit:
+    image: axllent/mailpit:v1.30.0
+    ports:
+      - "127.0.0.1:${MAILPIT_PORT:-8025}:8025"
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--output-document=-", "http://127.0.0.1:8025/readyz"]
+      interval: 3s
+      timeout: 2s
+      retries: 15
+
+  inspector:
+    build:
+      context: .
+      dockerfile: machine/inspector/Dockerfile
+    depends_on:
+      harmonicdb: {condition: service_healthy}
+      gpservers: {condition: service_healthy}
+      find-me: {condition: service_healthy}
+      mailweb: {condition: service_healthy}
+    networks: [butterfly]
+    restart: "no"
+
+networks:
+  butterfly:
+    name: butterfly
+
+volumes:
+  harmonicdb-data:
