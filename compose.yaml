@@ -88,8 +88,6 @@ services:
         condition: service_started
       passport-office-worker:
         condition: service_started
-      passport-service:
-        condition: service_healthy
       mailpit:
         condition: service_healthy
     networks: [butterfly]
@@ -140,7 +138,7 @@ services:
       dockerfile: Dockerfile.holder
     environment:
       PASSPORT_HOLDER_STORAGE: /holder
-      PASSPORT_UI_ORIGINS: http://localhost:${MAILWEB_PORT:-9847},http://127.0.0.1:${MAILWEB_PORT:-9847}
+      PASSPORT_UI_ORIGINS: http://localhost:${MAILWEB_PORT:-9847},http://127.0.0.1:${MAILWEB_PORT:-9847},http://0.0.0.0:${MAILWEB_PORT:-9847}
     volumes:
       - passport-holder-data:/holder
     ports:

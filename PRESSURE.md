@@ -155,6 +155,46 @@ The earlier v0.3 observations below are retained as the history that produced
 this correction. References there to Postbox wallet custody describe the old
 design, not the v0.3.1 runtime.
 
+## v0.3.2 — The Independent Holder
+
+The adversarial coupling audit found four classes of dependency:
+
+| Dependency | Classification | v0.3.2 disposition |
+| --- | --- | --- |
+| authorize `client_action`, correlate action/result, report unavailable/cancelled | **GENERIC CAPABILITY BROKER RESPONSIBILITY** | remains in Postbox |
+| `identity.*` ceremony, provider interaction wording, PIN, key, wallet, credential inspection/removal, proof | **PASSPORT SERVICE RESPONSIBILITY** | TPS/1 and provider-owned browser-to-service interaction |
+| capability name plus opaque request/result in a document | **MAILWEB PROTOCOL RESPONSIBILITY** | unchanged and identity-ignorant |
+| hard-coded provider health at Postbox startup, undeclared endpoint semantics | **ACCIDENTAL COUPLING** | startup dependency removed; provider declares ID/name/capabilities/contract |
+
+**Is Passport Service genuinely independent?** Yes. TPS/1 exposes declaration,
+status, enrollment, presentation, public inspection and removal over today's
+localhost HTTP Host Integration Transport. The independent holder client imports
+no Postbox code. A lifecycle test enrolls, kills/restarts only the service,
+inspects the persisted identity, and produces a proof.
+
+**Is Postbox genuinely Passport-agnostic?** Its application/API path knows only
+capability, opaque parameters/result, action correlation and failure. The current
+browser host configuration still contains one local endpoint and an optional
+identity-management shortcut. The trusted interaction description and service
+name come from the provider; Passport ceremony semantics do not enter Postbox
+handlers. Another provider can use the same invocation seam by declaring a
+capability, though the tiny static browser registry must be configured.
+
+**Who owns trusted UI and secrets?** TPS owns the wording and operation. The
+Postbox browser supplies a host surface, but submits the secret directly from
+browser JavaScript to TPS; no Postbox Go handler, MailWeb body, journey record or
+filesystem receives it. This is real process/data-flow isolation, not complete
+visual-origin isolation: browser CSP/CORS and the host window remain shared host
+machinery.
+
+**Local Capability Service pattern: PROVEN (narrowly).** Two consumers—Postbox
+and `examples/independent_holder_client`—consume the same declared contract, and
+Postbox no longer gates startup on TPS health. What remains bound is explicit:
+localhost HTTP, a configured endpoint registry, CORS origins, the browser window,
+TPS host storage and host time. There is no discovery, negotiation, plugin system
+or universal bus. Approximate HarmonicDB owner fingerprints remain deliberately
+unchanged; Visas and Entry Stamps remain unimplemented.
+
 ## Resolved in 0.1: GPServers receiver assumed UI ownership
 
 - Assumption: a positioning run is started asynchronously by the bundled console and completed through an SSE broadcast.

@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+// A deliberately dependency-free TPS/1 consumer. It does not import or run Postbox.
+const service = process.env.PASSPORT_SERVICE_URL || 'http://127.0.0.1:8792';
+const authority = process.env.PASSPORT_AUTHORITY_URL || 'http://127.0.0.1:8791';
+const [command, ...args] = process.argv.slice(2);
+const option = name => { const index=args.indexOf(`--${name}`); return index < 0 ? undefined : args[index+1]; };
+async function request(path, {method='GET', body}={}) {
+  const response=await fetch(service+path,{method,headers:body?{'content-type':'application/json'}:{},body:body?JSON.stringify(body):undefined});
+  const value=await response.json(); if(!response.ok||value.ok===false) throw new Error(value.error||`${method} ${path} failed`); return value;
+}
+async function invoke(capability, parameters, secret) { return (await request('/invoke',{method:'POST',body:{capability,parameters,secret}})).result; }
+async function main() { try {
+  if(command==='info') console.log(JSON.stringify(await request('/service-info'),null,2));
+  else if(command==='inspect') console.log(JSON.stringify(await request('/identity'),null,2));
+  else if(command==='remove') console.log(JSON.stringify(await request('/identity',{method:'DELETE'}),null,2));
+  else if(command==='present') console.log(JSON.stringify(await invoke('identity.present',{challenge:option('challenge')},option('pin')),null,2));
+  else if(command==='enroll') {
+    const pin=option('pin'), holder_name=option('name'), mail_address=option('mail');
+    const prepared=await invoke('identity.enroll.prepare',{holder_name,mail_address},pin);
+    const certifiedResponse=await fetch(authority+'/certify-holder',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(prepared)});
+    const certified=await certifiedResponse.json(); if(!certifiedResponse.ok||!certified.ok) throw new Error(certified.error||'Authority certification failed');
+    console.log(JSON.stringify(await invoke('identity.enroll.complete',{enrollment_token:prepared.enrollment_token,credential:certified.credential},pin),null,2));
+  } else throw new Error('usage: independent_holder_client info|inspect|remove|enroll --name NAME --mail ADDRESS --pin PIN|present --challenge JSON --pin PIN');
+} catch(error) { console.error(error.message); process.exitCode=1; } }
+main();
