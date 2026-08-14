@@ -3,7 +3,7 @@ name: butterfly
 services:
   harmonicdb:
     build: ./systems/harmonicdb
-    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; test -f /data/find-me-private.hws || python -m harmonic model-demo /data/find-me-private.hws --dataset find-me-private; exec python -m harmonic.hdbe --store find_me=/data/find-me.hws --store find_me_private=/data/find-me-private.hws --host 0.0.0.0 --port 8787"]
+    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; test -f /data/find-me-private-symbol.hws || python -m harmonic model-demo /data/find-me-private-symbol.hws --dataset find-me-private; exec python -m harmonic.hdbe --store find_me=/data/find-me.hws --store find_me_private=/data/find-me-private-symbol.hws --host 0.0.0.0 --port 8787"]
     volumes:
       - harmonicdb-data:/data
     networks: [butterfly]

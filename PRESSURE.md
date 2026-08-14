@@ -114,8 +114,11 @@ The correction target is therefore not merely another container. Postbox must lo
 ### HarmonicDB private history
 
 - Dynamic Domain append was sufficient to file arbitrary authenticated run coordinates. The Laravel model needed a generic `all()` path implemented as a real HDB sweep followed by observations; `describe` exposes coordinate counts, not coordinate identities.
-- Symbolic ownership remains awkward. The current model projects 64 bits of a SHA-256 passport fingerprint into two numeric Waves and compares using the measured HWS float recovery tolerance. This yields roughly 46 effective matching bits in the present codec, avoids storing the public passport number verbatim, and is adequate for the experiment—but it is not an exact identity index.
-- Private history therefore performs a full owner-Wave sweep and per-coordinate observation. The next HDB contract should support exact symbolic values and indexed filtering/relationships instead of asking an application to turn identity into approximate measurements.
+- Resolved by HarmonicDB Stage IX: private ownership is now one exact `owner`
+  Symbol Wave. HDBE `match_symbol` uses an embedded candidate index followed by
+  mandatory byte-exact verification; hashes and reconstructed amplitudes are
+  never authoritative equality. Find Me no longer sweeps or projects identity
+  into the former `owner_a`/`owner_b` approximate numeric pair.
 
 ### New and clarified host dependencies
 
