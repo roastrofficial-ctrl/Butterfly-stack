@@ -21,12 +21,10 @@ $site = MailWeb::template('find-me/site', fn () => MailWeb::page('Find Me')
     ->paragraph('No satellites. No GeoIP. No browser location. Just the Internet being asked a deeply unreasonable question.'));
 
 MailWeb::get('/', function () use ($site) {
-    $hero = MailWeb::enclosure(resource_path('mailweb/find-me-network.jpg'), 'find-me-network');
-
     return MailWeb::page('Find Me')
         ->template($site)
         ->slot('content', MailWeb::page('Find Me')
-            ->image($hero, 'Terrestrial servers triangulating a receiver through luminous network paths', 'hero')
+            ->capabilitySurface('visual.observe', ['sight' => 'find-me.hero', 'initial_pass' => '2', 'refine_pass' => '4'], 'hero')
             ->heading('WHERE DOES THE INTERNET THINK YOU ARE?', variant: 'display')
             ->paragraph('A constellation of terrestrial servers will time the shape of the network, argue statistically about the evidence, and return a gloriously provisional position.')
             ->paragraph('Your device will not reveal its location. The network has to earn its answer.')
@@ -110,7 +108,7 @@ MailWeb::get('/stack', function () use ($site) {
     return MailWeb::page('Find Me — the stack')
         ->template($site)
         ->slot('content', MailWeb::page('The stack')
-            ->heading('FOUR IMPROBABLE MACHINES', variant: 'display')
+            ->heading('FIVE IMPROBABLE MACHINES', variant: 'display')
             ->paragraph('Find Me is a small, conventional Laravel application. The unconventional part is everything it chooses to depend on.')
             ->heading('1 · MailWeb', level: 2)
             ->paragraph('The interface reaches you as correspondence. Requests and replies travel through SMTP as structured MailWeb documents; this page is not HTML pretending to be mail.')
@@ -120,6 +118,8 @@ MailWeb::get('/stack', function () use ($site) {
             ->paragraph('Find Me stores each LocationRun in its own HarmonicDB through a Laravel package, then reads the observation back before replying. The database stores those values as measurable waves inside a real audio file.')
             ->heading('4 · Technical Passport', level: 2)
             ->paragraph('Postbox carries the holder’s protected wallet and can prove possession to Find Me. A local verifier trusts independently exported Authority material; the issuing Authority remains offline during entry.')
+            ->heading('5 · Lucida', level: 2)
+            ->paragraph('Find Me names remote Sights rather than image files. Lucida releases only permitted visual construction; its local Draughtsman builds a Rendition on the browser’s host display surface.')
             ->heading('THE IMPORTANT BIT', level: 2)
             ->paragraph('The systems meet only at their public service boundaries. Find Me orchestrates them exactly as an ordinary client application would—no shared runtime, hidden filesystem shortcut, or crossed repository boundary.')
             ->button('Put the stack to work', '/locate', 'prominent'));
@@ -144,6 +144,16 @@ MailWeb::get('/locate', function (MailWebRequest $request) use ($site) {
                 ->paragraph(number_format($run->confidence * 100, 1).'%')
                 ->heading('Uncertainty')
                 ->paragraph('± '.number_format($run->uncertainty_km, 1).' km')
+                ->capabilitySurface('visual.observe', [
+                    'sight' => 'find-me.map',
+                    'initial_pass' => '1',
+                    'refine_pass' => '3',
+                    'knowledge_map' => 'true',
+                    'overlay_position' => 'true',
+                    'latitude' => (string) $run->latitude,
+                    'longitude' => (string) $run->longitude,
+                    'uncertainty_km' => (string) $run->uncertainty_km,
+                ], 'map')
                 ->paragraph("Journey {$journey} · {$result['session_id']} · {$hdb['append']} · {$hdb['observation']}")
                 ->paragraph('GPServers calculated the fix. Find Me stored its LocationRun in HarmonicDB and read it back before posting this reply.')
                 ->button('Acquire another fix', '/locate', 'prominent'));

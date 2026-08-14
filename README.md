@@ -2,7 +2,7 @@
 
 > Butterfly is a working computer ecosystem assembled from technologies whose histories never happened.
 
-Each subsystem began as an independent counterfactual experiment. Generation 0.1 makes them survive contact without erasing their boundaries: MailWeb carries application correspondence, Global Positioning Servers estimates location from network observations, and HarmonicDB stores the resulting measurements as Waves over a Domain. Find Me is an independent application that consumes those public boundaries; it is not part of any system repository.
+Each subsystem began as an independent counterfactual experiment. Generation 0.4 makes them survive contact without erasing their boundaries: MailWeb carries application correspondence, Global Positioning Servers estimates location, HarmonicDB stores measurements, Technical Passport supplies holder identity, and Lucida supplies selective visual observation. Find Me is an independent application that consumes those public boundaries.
 
 ## Boot the machine
 
@@ -13,6 +13,22 @@ docker compose up --build
 ```
 
 Open <http://localhost:9847>. Postbox begins at `mailweb://find-me.local/`. Press **Acquire network fix**; the request and its eventual result travel as real MailWeb correspondence through SMTP. Acquisition may take up to two minutes because GPServers performs live network measurements.
+
+## Lucida First Contact
+
+Find Me no longer receives its hero or map as raster assets. Its MailWeb document
+names `find-me.hero` and `find-me.map` Sights and asks the configured
+`visual.observe` provider for selective SIGHT/1 releases. Lucida owns the source
+raster, observer state, protocol interpretation and receiving Draughtsman;
+Postbox supplies only a generic capability surface. The final canvas remains an
+honestly labelled **HOST DISPLAY SURFACE**.
+
+The hero begins at Pass II and offers an explicit closer look. The map begins at
+Pass I; its GPServers estimate and uncertainty are a locally composed overlay.
+**Zooming enlarges what you already know. Looking closer asks the source to tell
+you more.** Stop only the source with `docker compose stop lucida`: existing
+canvases and local zoom remain, while a closer-Sight request fails without a
+raster fallback.
 
 ## Passport First Contact
 
@@ -49,15 +65,16 @@ To exercise the vertical journey without the graphical renderer, use Postbox fro
 docker compose run --rm mailweb --transport smtp --timeout 180s mailweb://find-me.local/locate
 ```
 
-## Butterfly 0.3
+## Butterfly 0.4
 
 ```text
 ✓ MailWeb
 ✓ Global Positioning Servers
 ✓ HarmonicDB
 ✓ PassportOffice
+✓ Lucida visual representation
 
-○ Graphics
+◐ Browser canvas / physical display
 ○ Storage
 ○ Time
 ○ Memory
@@ -70,12 +87,14 @@ Unchecked systems are honest host dependencies, not failed services. Their machi
 
 ## Repository assembly
 
-The three source projects remain Git submodules:
+The five source projects remain Git submodules:
 
 ```text
 systems/mailweb     → What-if-MailWeb
 systems/gpservers   → What-if-GPS-ervers
 systems/harmonicdb  → What-if-HarmonicDB
+systems/passports   → What-if-Auth-Passports
+systems/lucida      → What-if-lucida-img
 ```
 
 Clone recursively, or run `git submodule update --init --recursive`. Butterfly never imports implementation code across these system boundaries. Component changes stay visible as changes within their respective submodule histories.

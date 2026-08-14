@@ -2,6 +2,49 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v0.4 — Lucida First Contact
+
+### Initial assessment
+
+- Find Me's hero was an ordinary JPEG MailWeb enclosure. Its positioning result had no map at all, so ordinary Postbox enclosure handling would have delivered and cached source bytes.
+- MailWeb 0.6 could declare a one-shot `client_action`, but that shape assumes a provider popup followed by an application POST. A long-lived observation with local interaction did not fit honestly.
+- Postbox already routed capability names to provider declarations, but its registry contained only Technical Passport and its renderer offered only ordinary `<img>` output.
+- Lucida Stage III already had the important boundary: SIGHT/1 request/release JSON, independent `SightSource` and `Observer`, private prepared Tracings, selective projection, accumulated observer knowledge, and offline replay. Its localhost laboratory server was the right small seam to harden into a service; no new Lucida protocol was needed.
+
+### Boundary chosen
+
+MailWeb gained one generic declarative node, `capability_surface`. It carries a
+capability name and bounded opaque string parameters. Postbox resolves a provider
+declaration, loads that provider's declared client module, and supplies a DOM
+surface plus a generic evidence callback. It does not interpret SIGHT/1,
+LUCIDA/2, Forms, Passes, regions, private Sights, or Draughtsman operations.
+
+Lucida exposes `service-info`, health, observer state, open-observation and
+request/refine operations over **HOST INTEGRATION TRANSPORT**. Its own browser
+module is the receiving Draughtsman. HTTP, dynamic browser modules and CORS are
+scaffolding from our timeline, not Lucida networking.
+
+### Outcome and pressure
+
+- SIGHT/1 survived application use unchanged. The source raster stays solely in the Lucida container; MailWeb correspondence contains only Sight IDs and observation intent. No image fallback exists.
+- Prepared observation remained appropriate. Startup produces private Tracings for `find-me.hero` and `find-me.map`; Releases contain expanded observer-safe operations with zero original pixels and no private Form catalogue.
+- Initial hero and map observations are selective. Refinement is explicit. Canvas scaling emits journey evidence but performs no fetch. Released construction stays in the Lucida-owned browser module and remains drawable after the source stops; reload/restart state is deliberately ephemeral.
+- Observer sessions are isolated in the service. There is no cross-observer cache. Once a browser reload forgets knowledge, that is software state loss—not undisclosure.
+- Find Me owns the position and uncertainty values. Today its declared overlay is drawn by the Lucida client package on the local surface, but those values are never sent to the Sight source. A future generic host-overlay contract may separate even this rendering custody if another application earns it.
+- The Journey Inspector records capability delegation, SIGHT/1 release facts/bytes/pass/region, Draughtsman rendition, and explicitly network-free local zoom. These browser-observed events are session-only and are not server-authenticated evidence.
+- The Local Capability Service pattern now works across a secret-bearing one-shot Passport ceremony and a stateful, repeated visual surface. It is **PROVEN ACROSS TWO CAPABILITY CLASSES**, while discovery remains a static host registry.
+- Visual representation and transfer are now counterfactual. Physical canvas rasterisation, browser layout, colour output and the display window remain **HOST DISPLAY SURFACE** dependencies. Graphics is partially replaced, not checked off without qualification.
+- Performance and bandwidth are exposed per release in the surface and journey. No superiority claim is made; tracing at service startup and JSON geometry are visibly more expensive than a cached JPEG in some cases.
+- MailWeb page caching does not contain observer releases, but a cached document can create a fresh observation surface. Privacy-bearing capability freshness and non-prefetch metadata remain open pressure.
+
+### What broke when an application stopped receiving images and started asking permission to look?
+
+The one-shot client-action assumption broke. Rendering could no longer mean
+resolving a URL: it needed an independently owned, stateful provider surface whose
+knowledge grows only after explicit requests. The collision also split “graphics”
+in two. Lucida could replace remote visual representation and transfer, but not
+the host canvas that turns released construction into emitted light.
+
 ## v0.3.1 — Departmental Separation (before implementation)
 
 Postbox currently contains `passport.go`, embeds the Passport Node holder agent in its image, persists `/postbox-data/holder.passport.json`, validates `WALLET-1`, exposes passport inspect/import/remove endpoints, knows public credential fields, collects PINs, invokes Authority issuance, invokes AUTH-1 proof generation, and renders Passport-specific enrollment/presentation language. Compose gives it the wallet volume, Authority URL and Passport implementation files.

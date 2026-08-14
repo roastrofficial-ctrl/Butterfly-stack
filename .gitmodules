@@ -10,3 +10,6 @@
 [submodule "systems/passports"]
 	path = systems/passports
 	url = git@github.com:roastrofficial-ctrl/What-if-Auth-Passports.git
+[submodule "systems/lucida"]
+	path = systems/lucida
+	url = git@github.com:roastrofficial-ctrl/What-if-lucida-img.git

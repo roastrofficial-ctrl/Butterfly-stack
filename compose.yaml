@@ -24,6 +24,20 @@ services:
       timeout: 3s
       retries: 12
 
+  lucida:
+    build:
+      context: .
+      dockerfile: machine/lucida/Dockerfile
+    ports:
+      - "127.0.0.1:${LUCIDA_PORT:-8077}:8077"
+    networks: [butterfly]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8077/health',timeout=3).status == 200"]
+      interval: 5s
+      timeout: 4s
+      retries: 12
+      start_period: 15s
+
   find-me:
     build:
       context: .
@@ -84,6 +98,8 @@ services:
     ports:
       - "127.0.0.1:${MAILWEB_PORT:-9847}:9847"
     depends_on:
+      lucida:
+        condition: service_healthy
       find-me-worker:
         condition: service_started
       passport-office-worker:
@@ -203,6 +219,7 @@ services:
     depends_on:
       harmonicdb: {condition: service_healthy}
       gpservers: {condition: service_healthy}
+      lucida: {condition: service_healthy}
       passport-verifier: {condition: service_healthy}
       passport-service: {condition: service_healthy}
       passport-office: {condition: service_healthy}

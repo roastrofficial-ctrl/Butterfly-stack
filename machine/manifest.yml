@@ -1,5 +1,5 @@
 {
-  "machine": {"name": "Butterfly", "generation": "0.3.1"},
+  "machine": {"name": "Butterfly", "generation": "0.4"},
   "application": {"name": "Find Me", "health": "http://find-me:8000"},
   "systems": {
     "correspondence": {"implementation": "MailWeb", "status": "counterfactual", "health": "http://mailweb:9847/api/state"},
@@ -10,7 +10,8 @@
     "holder_identity": {"implementation": "Technical Passport Service", "status": "counterfactual", "health": "http://passport-service:8792/health"},
     "identity_application": {"implementation": "Passport Office", "status": "counterfactual", "health": "http://passport-office:8000/up"},
     "issuing_authority": {"implementation": "Butterfly Passport Authority", "status": "counterfactual", "health": "http://passport-authority:8791/health"},
-    "graphics": {"implementation": "host", "status": "host_dependency"},
+    "visual_observation": {"implementation": "Lucida", "status": "counterfactual", "health": "http://lucida:8077/health"},
+    "display_surface": {"implementation": "Browser canvas rasterisation", "status": "host_dependency"},
     "storage": {"implementation": "host", "status": "host_dependency"},
     "time": {"implementation": "host", "status": "host_dependency"},
     "memory": {"implementation": "host", "status": "host_dependency"},
@@ -19,5 +20,5 @@
     "architecture": {"implementation": "binary_host", "status": "host_dependency"}
   },
   "integration_transports": ["Docker networking", "TCP", "HTTP/JSON host adapters", "SMTP via Mailpit"],
-  "host_dependencies": {"passport": ["HOST TIME", "HOST STORAGE", "HOST TRUST CONFIGURATION", "HOST CRYPTOGRAPHY"]}
+  "host_dependencies": {"passport": ["HOST TIME", "HOST STORAGE", "HOST TRUST CONFIGURATION", "HOST CRYPTOGRAPHY"], "lucida": ["HOST INTEGRATION TRANSPORT", "HOST DISPLAY SURFACE"]}
 }
