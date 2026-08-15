@@ -2,17 +2,44 @@ name: butterfly
 
 services:
   harmonicdb:
-    build: ./systems/harmonicdb
-    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; test -f /data/find-me-private-symbol.hws || python -m harmonic model-demo /data/find-me-private-symbol.hws --dataset find-me-private; exec python -m harmonic.hdbe --store find_me=/data/find-me.hws --store find_me_private=/data/find-me-private-symbol.hws --host 0.0.0.0 --port 8787"]
+    build:
+      context: .
+      dockerfile: machine/porter/HarmonicDB.Dockerfile
+    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; test -f /data/find-me-private-symbol.hws || python -m harmonic model-demo /data/find-me-private-symbol.hws --dataset find-me-private; exec harmonic-host"]
     volumes:
       - harmonicdb-data:/data
-    networks: [butterfly]
+      - porter-harmonicdb-ipc:/porter
+    network_mode: none
+    depends_on:
+      porter-harmonicdb: {condition: service_healthy}
     healthcheck:
-      test: ["CMD", "python", "-c", "import json,urllib.request; r=urllib.request.Request('http://127.0.0.1:8787/info',b'{}',{'Content-Type':'application/json'}); assert json.load(urllib.request.urlopen(r,timeout=3))['ok']"]
+      test: ["CMD", "python", "-c", "from pathlib import Path; assert Path('/porter/host.ready').exists()"]
       interval: 5s
       timeout: 4s
       retries: 12
       start_period: 5s
+
+  porter-find-me:
+    build: ./systems/porter
+    command: ["--identity", "find-me", "--ipc", "/ipc", "--routes", "{\"harmonicdb\":\"http://porter-harmonicdb:7070\"}"]
+    volumes: [porter-find-me-ipc:/ipc]
+    networks: [porter-fabric]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:7070/health',timeout=2).status == 200"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+
+  porter-harmonicdb:
+    build: ./systems/porter
+    command: ["--identity", "harmonicdb", "--ipc", "/ipc", "--routes", "{\"find-me\":\"http://porter-find-me:7070\"}"]
+    volumes: [porter-harmonicdb-ipc:/ipc]
+    networks: [porter-fabric]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:7070/health',timeout=2).status == 200"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
 
   gpservers:
     build: ./systems/gpservers
@@ -50,6 +77,7 @@ services:
       GPSERVERS_URL: http://gpservers:8090
       HARMONICDB_URL: http://harmonicdb:8787
       HARMONICDB_TIMEOUT: "150"
+      HARMONICDB_PORTER_DIR: /porter
       PASSPORT_VERIFIER_URL: http://passport-verifier:8790
       LUCIDA_URL: http://lucida:8077
       MAILWEB_MAILPIT_URL: http://mailpit:8025
@@ -57,6 +85,8 @@ services:
       MAILWEB_SMTP_PORT: "1025"
       MAILWEB_PUBLISHER_MAILBOX: find-me@butterfly.local
     depends_on:
+      porter-find-me:
+        condition: service_healthy
       lucida:
         condition: service_healthy
       gpservers:
@@ -68,6 +98,7 @@ services:
       mailpit:
         condition: service_healthy
     networks: [butterfly]
+    volumes: [porter-find-me-ipc:/porter]
     healthcheck:
       test: ["CMD", "php", "artisan", "find-me:health"]
       interval: 5s
@@ -86,6 +117,7 @@ services:
       mailpit:
         condition: service_healthy
     networks: [butterfly]
+    volumes: [porter-find-me-ipc:/porter]
 
   mailweb:
     build:
@@ -229,15 +261,19 @@ services:
       passport-authority: {condition: service_healthy}
       find-me: {condition: service_healthy}
       mailweb: {condition: service_healthy}
-    networks: [butterfly]
+    networks: [butterfly, porter-fabric]
     restart: "no"
 
 networks:
   butterfly:
     name: butterfly
+  porter-fabric:
+    name: butterfly-porter
 
 volumes:
   harmonicdb-data:
   passport-holder-data:
   passport-authority-data:
   passport-trust:
+  porter-find-me-ipc:
+  porter-harmonicdb-ipc:

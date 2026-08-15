@@ -33,6 +33,30 @@ you more.** Stop only the source with `docker compose stop lucida`: existing
 canvases and local zoom remain, while a closer-Sight request fails without a
 raster fallback.
 
+## PORTER Generation I
+
+PORTER tests the Host Isolation Principle: computational Hosts are not directly
+network-addressable. They communicate locally with appointed Porters, which
+carry opaque Packages across a separate communications fabric. A recipient
+Porter holds an arrival; it never invokes the Host. The Host must explicitly
+collect it.
+
+Generation I proves the strong form with two `network_mode: none` fixture Hosts:
+
+```sh
+cd systems/porter
+python3 -m unittest -v
+./tests/docker_generation1.sh
+```
+
+HarmonicDB is the first real Butterfly Host migrated behind a Porter. Its
+container has no IP address, route, listener, or membership of either Butterfly
+network. Find Me deposits HDBE/1 calls into its local mail slot; the HarmonicDB
+Host later collects them and deposits Returns. HTTP no longer carries this
+boundary, although Find Me's current Laravel adapter still waits synchronously
+for the Return. See `systems/porter/README.md` for PORTER/1 and the proposed—not
+implemented—Generation II Collection Ticket.
+
 ## Passport First Contact
 
 The v0.2 import fixture remains under `demo/passport` as an historical protocol
@@ -68,7 +92,7 @@ To exercise the vertical journey without the graphical renderer, use Postbox fro
 docker compose run --rm mailweb --transport smtp --timeout 180s mailweb://find-me.local/locate
 ```
 
-## Butterfly 0.4
+## Butterfly 0.5
 
 ```text
 ✓ MailWeb
@@ -76,6 +100,7 @@ docker compose run --rm mailweb --transport smtp --timeout 180s mailweb://find-m
 ✓ HarmonicDB
 ✓ PassportOffice
 ✓ Lucida visual representation
+✓ PORTER mediated communication
 
 ◐ Browser canvas / physical display
 ○ Storage
@@ -90,7 +115,7 @@ Unchecked systems are honest host dependencies, not failed services. Their machi
 
 ## Repository assembly
 
-The five source projects remain Git submodules:
+The six source projects remain Git submodules:
 
 ```text
 systems/mailweb     → What-if-MailWeb
@@ -98,6 +123,7 @@ systems/gpservers   → What-if-GPS-ervers
 systems/harmonicdb  → What-if-HarmonicDB
 systems/passports   → What-if-Auth-Passports
 systems/lucida      → What-if-lucida-img
+systems/porter      → What-if-Porter
 ```
 
 Clone recursively, or run `git submodule update --init --recursive`. Butterfly never imports implementation code across these system boundaries. Component changes stay visible as changes within their respective submodule histories.

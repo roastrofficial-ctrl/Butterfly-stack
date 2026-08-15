@@ -2,6 +2,70 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v0.5 — PORTER Generation I
+
+### Before implementation
+
+Every Butterfly Host occupied the same Docker IP network and most exposed an
+HTTP listener. Removing published host ports did not isolate computational Hosts;
+any peer container could still address `harmonicdb:8787`, `gpservers:8090`, or a
+Passport service directly. The architecture assumed that locating and connecting
+to a process was the natural prerequisite to useful computation.
+
+The smallest independent proof therefore used two new Hosts with
+`network_mode: none`, each sharing a private filesystem mail slot only with its
+Porter. Both Porters alone joined a communications network. The test started no
+recipient Host, deposited a Package, observed it held at the destination Porter,
+and proved no recipient process or execution marker appeared. Only after the
+recipient Host was explicitly started did it COLLECT, process, deposit a Return,
+and allow the sender Host to COLLECT that Return.
+
+### PORTER/1 boundary
+
+PORTER/1 defines Package, Deposit, Collection, Return, Receipt and Refusal. Its
+envelope exposes sender/recipient identities, Kind, creation/expiry, reply
+relationships and an opaque application payload. It deliberately does not yet
+define Introduction, authority claims, retries, duplicate suppression,
+withdrawal, discovery or delivery guarantees.
+
+Host–Porter IPC uses atomic filesystem rename. Porter–Porter carriage currently
+uses HTTP/JSON over a dedicated Docker network. Both are **HOST INTEGRATION
+TRANSPORT** scaffolding. Crucially, the HTTP listener belongs to communications
+apparatus, never the computational Host.
+
+### First real collision: HarmonicDB
+
+HarmonicDB was chosen because useful database computation does not inherently
+require IP connectivity. It now runs with `network_mode: none`, no listener, no
+IP address and no gateway. Its host loop polls its local Porter slot, explicitly
+collects `hdbe.call` Packages, evaluates the unchanged HDBE/1 application payload,
+and deposits `porter.return` Packages. PORTER knows no Waves, Domains, queries or
+database errors.
+
+Find Me's Laravel HarmonicDB adapter deposits to its own local slot and scans for
+the correlated Return. A live test deliberately configured an unreachable HTTP
+URL and still collected HDBE/1 `info` successfully through PORTER. Observed timing
+was approximately 42 ms waiting for collection versus 0.027 ms of Host work.
+
+This is not yet an asynchronous application architecture. The correspondence is
+asynchronous and store-and-collect, but Laravel waits inside a synchronous model
+call. That discomfort is the result: remote-function-call control flow survived
+after its transport primitive disappeared.
+
+Find Me itself remains IP-networked because its MailWeb, GPServers, Passport and
+Lucida boundaries have not migrated. Claiming whole-machine Host Isolation would
+therefore be false. Generation I proves two fully isolated fixture Hosts and one
+fully isolated production service Host, not all of Butterfly.
+
+### Most interesting Generation II
+
+Add durable local **Collection Tickets** rather than migrating another service.
+A Host should deposit, continue useful work, and later collect available Returns.
+That experiment will force crash recovery, duplicate Returns, idempotent
+collection, expiry and abandoned work to become native concepts. Introductions
+and Technical Passport claims should wait until the lifecycle they would protect
+has earned a stable shape.
+
 ## v0.4 — Lucida First Contact
 
 ### Initial assessment

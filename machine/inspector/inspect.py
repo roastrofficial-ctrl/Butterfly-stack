@@ -8,7 +8,7 @@ manifest = json.loads(Path(os.getenv("BUTTERFLY_MANIFEST", "/machine/manifest.ym
 def online(name, spec):
     url = spec.get("health")
     if not url:
-        return "HOST"
+        return "ISOLATED — NO DIRECT ADDRESS" if spec.get("isolation") == "no_direct_address" else "HOST"
     try:
         request = Request(url, method="POST", data=b"{}", headers={"Content-Type": "application/json"}) if name == "database" else Request(url)
         with urlopen(request, timeout=30) as response:

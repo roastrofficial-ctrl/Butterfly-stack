@@ -1,11 +1,12 @@
 {
-  "machine": {"name": "Butterfly", "generation": "0.4"},
+  "machine": {"name": "Butterfly", "generation": "0.5"},
   "application": {"name": "Find Me", "health": "http://find-me:8000"},
   "systems": {
     "correspondence": {"implementation": "MailWeb", "status": "counterfactual", "health": "http://mailweb:9847/api/state"},
     "client": {"implementation": "Postbox", "status": "counterfactual", "health": "http://mailweb:9847/api/state"},
     "positioning": {"implementation": "Global Positioning Servers", "status": "counterfactual", "health": "http://gpservers:8090/health"},
-    "database": {"implementation": "HarmonicDB", "status": "counterfactual", "health": "http://harmonicdb:8787/info"},
+    "communications_boundary": {"implementation": "PORTER/1", "status": "counterfactual", "health": "http://porter-harmonicdb:7070/health"},
+    "database": {"implementation": "HarmonicDB", "status": "counterfactual", "isolation": "no_direct_address"},
     "identity_verification": {"implementation": "Technical Passport Verifier", "status": "counterfactual", "health": "http://passport-verifier:8790/health"},
     "holder_identity": {"implementation": "Technical Passport Service", "status": "counterfactual", "health": "http://passport-service:8792/health"},
     "identity_application": {"implementation": "Passport Office", "status": "counterfactual", "health": "http://passport-office:8000/up"},
@@ -19,6 +20,6 @@
     "software": {"implementation": "host", "status": "host_dependency"},
     "architecture": {"implementation": "binary_host", "status": "host_dependency"}
   },
-  "integration_transports": ["Docker networking", "TCP", "HTTP/JSON host adapters", "SMTP via Mailpit"],
+  "integration_transports": ["PORTER/1 filesystem Host IPC", "PORTER network HTTP/JSON scaffolding", "Docker networking", "TCP", "HTTP/JSON host adapters", "SMTP via Mailpit"],
   "host_dependencies": {"passport": ["HOST TIME", "HOST STORAGE", "HOST TRUST CONFIGURATION", "HOST CRYPTOGRAPHY"], "lucida": ["HOST INTEGRATION TRANSPORT", "HOST DISPLAY SURFACE"]}
 }
