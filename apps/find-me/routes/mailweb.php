@@ -8,6 +8,22 @@ use MailWeb\Laravel\Http\MailWebRequest;
 
 $entries = [];
 
+// Find Me owns Sight identity, source custody and disclosure policy. Lucida is a
+// thin, generic server-side Draughtsman reached over HOST INTEGRATION TRANSPORT.
+$prepareSight = function (string $privateAsset, int $maxPass = 4): string {
+    try {
+        $response = Http::timeout(45)->post(rtrim(env('LUCIDA_URL', 'http://lucida:8077'), '/').'/api/prepare', [
+            'source_base64' => base64_encode(file_get_contents($privateAsset)),
+            'detail' => 'medium',
+            'max_pass' => $maxPass,
+        ]);
+        $response->throw();
+        return (string) $response->json('handle');
+    } catch (Throwable) {
+        return 'UNAVAILABLE';
+    }
+};
+
 $site = MailWeb::template('find-me/site', fn () => MailWeb::page('Find Me')
     ->presentation('#20B8CD', '#07141D', '#F4E9CE', '#102733', 'mono', 'spacious', 'soft')
     ->heading('FIND ME', variant: 'display')
@@ -20,11 +36,12 @@ $site = MailWeb::template('find-me/site', fn () => MailWeb::page('Find Me')
     ->slotPlaceholder('content')
     ->paragraph('No satellites. No GeoIP. No browser location. Just the Internet being asked a deeply unreasonable question.'));
 
-MailWeb::get('/', function () use ($site) {
+MailWeb::get('/', function () use ($site, $prepareSight) {
+    $hero = $prepareSight(resource_path('private/find-me-network.jpg'));
     return MailWeb::page('Find Me')
         ->template($site)
         ->slot('content', MailWeb::page('Find Me')
-            ->capabilitySurface('visual.observe', ['sight' => 'find-me.hero', 'initial_pass' => '2', 'refine_pass' => '4'], 'hero')
+            ->capabilitySurface('visual.observe', ['sight' => 'find-me.hero', 'prepared_sight' => $hero, 'initial_pass' => '2', 'refine_pass' => '4'], 'hero')
             ->heading('WHERE DOES THE INTERNET THINK YOU ARE?', variant: 'display')
             ->paragraph('A constellation of terrestrial servers will time the shape of the network, argue statistically about the evidence, and return a gloriously provisional position.')
             ->paragraph('Your device will not reveal its location. The network has to earn its answer.')
@@ -125,7 +142,7 @@ MailWeb::get('/stack', function () use ($site) {
             ->button('Put the stack to work', '/locate', 'prominent'));
 });
 
-MailWeb::get('/locate', function (MailWebRequest $request) use ($site) {
+MailWeb::get('/locate', function (MailWebRequest $request) use ($site, $prepareSight) {
     $journey = 'BF:'.substr($request->id(), -12);
     try {
         $response = Http::timeout(150)->post(rtrim(env('GPSERVERS_URL', 'http://gpservers:8090'), '/').'/api/position', [
@@ -135,6 +152,7 @@ MailWeb::get('/locate', function (MailWebRequest $request) use ($site) {
         $result = $response->json();
         $run = LocationRun::fromPositioningResult($journey, $result);
         $hdb = $run->evidence();
+        $map = $prepareSight(resource_path('private/find-me-map.png'), 3);
         return MailWeb::page('Find Me — fix acquired')
             ->template($site)
             ->slot('content', MailWeb::page('Probable location')
@@ -146,6 +164,7 @@ MailWeb::get('/locate', function (MailWebRequest $request) use ($site) {
                 ->paragraph('± '.number_format($run->uncertainty_km, 1).' km')
                 ->capabilitySurface('visual.observe', [
                     'sight' => 'find-me.map',
+                    'prepared_sight' => $map,
                     'initial_pass' => '1',
                     'refine_pass' => '3',
                     'knowledge_map' => 'true',

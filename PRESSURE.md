@@ -19,15 +19,19 @@ declaration, loads that provider's declared client module, and supplies a DOM
 surface plus a generic evidence callback. It does not interpret SIGHT/1,
 LUCIDA/2, Forms, Passes, regions, private Sights, or Draughtsman operations.
 
-Lucida exposes `service-info`, health, observer state, open-observation and
-request/refine operations over **HOST INTEGRATION TRANSPORT**. Its own browser
-module is the receiving Draughtsman. HTTP, dynamic browser modules and CORS are
-scaffolding from our timeline, not Lucida networking.
+Lucida exposes `service-info`, health, ephemeral preparation, observer state,
+open-observation and request/refine operations over **HOST INTEGRATION
+TRANSPORT**. Find Me owns the private source and its public Sight name; it submits
+an unnamed HOST SIGHT INPUT to the generic preparation operation and places only
+the returned opaque handle in correspondence. Lucida owns no application asset
+catalogue. Its own browser module is the receiving Draughtsman. HTTP, base64 host
+input envelopes, dynamic browser modules and CORS are scaffolding from our
+timeline, not Lucida networking.
 
 ### Outcome and pressure
 
-- SIGHT/1 survived application use unchanged. The source raster stays solely in the Lucida container; MailWeb correspondence contains only Sight IDs and observation intent. No image fallback exists.
-- Prepared observation remained appropriate. Startup produces private Tracings for `find-me.hero` and `find-me.map`; Releases contain expanded observer-safe operations with zero original pixels and no private Form catalogue.
+- SIGHT/1 survived application use unchanged. The source raster stays in Find Me's private application resources and crosses only the server-side Lucida tool boundary as HOST SIGHT INPUT; MailWeb correspondence contains a Sight ID, opaque prepared handle and observation intent. No image fallback exists.
+- Prepared observation remained appropriate, but ownership moved upward. Find Me requests an ephemeral private Tracing when composing the relevant page; Lucida deduplicates it by content/policy without learning application names. Releases contain expanded observer-safe operations with zero original pixels and no private Form catalogue.
 - Initial hero and map observations are selective. Refinement is explicit. Canvas scaling emits journey evidence but performs no fetch. Released construction stays in the Lucida-owned browser module and remains drawable after the source stops; reload/restart state is deliberately ephemeral.
 - Observer sessions are isolated in the service. There is no cross-observer cache. Once a browser reload forgets knowledge, that is software state loss—not undisclosure.
 - Find Me owns the position and uncertainty values. Today its declared overlay is drawn by the Lucida client package on the local surface, but those values are never sent to the Sight source. A future generic host-overlay contract may separate even this rendering custody if another application earns it.

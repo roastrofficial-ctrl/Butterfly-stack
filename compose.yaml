@@ -51,11 +51,14 @@ services:
       HARMONICDB_URL: http://harmonicdb:8787
       HARMONICDB_TIMEOUT: "150"
       PASSPORT_VERIFIER_URL: http://passport-verifier:8790
+      LUCIDA_URL: http://lucida:8077
       MAILWEB_MAILPIT_URL: http://mailpit:8025
       MAILWEB_SMTP_HOST: mailpit
       MAILWEB_SMTP_PORT: "1025"
       MAILWEB_PUBLISHER_MAILBOX: find-me@butterfly.local
     depends_on:
+      lucida:
+        condition: service_healthy
       gpservers:
         condition: service_healthy
       harmonicdb:

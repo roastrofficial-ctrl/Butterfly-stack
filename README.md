@@ -16,12 +16,15 @@ Open <http://localhost:9847>. Postbox begins at `mailweb://find-me.local/`. Pres
 
 ## Lucida First Contact
 
-Find Me no longer receives its hero or map as raster assets. Its MailWeb document
-names `find-me.hero` and `find-me.map` Sights and asks the configured
-`visual.observe` provider for selective SIGHT/1 releases. Lucida owns the source
-raster, observer state, protocol interpretation and receiving Draughtsman;
-Postbox supplies only a generic capability surface. The final canvas remains an
-honestly labelled **HOST DISPLAY SURFACE**.
+Find Me keeps its hero and map originals in private application resources. When
+preparing correspondence it gives an ephemeral **HOST SIGHT INPUT** to Lucida's
+thin server-side tracing service and receives an opaque prepared-Sight handle.
+The MailWeb document names Find Me's `find-me.hero` or `find-me.map` Sight and
+asks the configured `visual.observe` provider for selective SIGHT/1 releases;
+neither the document nor Postbox receives the original. Lucida owns tracing,
+protocol interpretation, observer state and the receiving Draughtsman, but owns
+no Find Me asset catalogue. Postbox supplies only a generic capability surface.
+The final canvas remains an honestly labelled **HOST DISPLAY SURFACE**.
 
 The hero begins at Pass II and offers an explicit closer look. The map begins at
 Pass I; its GPServers estimate and uncertainty are a locally composed overlay.
