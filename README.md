@@ -33,7 +33,7 @@ you more.** Stop only the source with `docker compose stop lucida`: existing
 canvases and local zoom remain, while a closer-Sight request fails without a
 raster fallback.
 
-## PORTER Generations I–III and ROUNDS
+## PORTER Generations I–IV and ROUNDS
 
 PORTER tests the Host Isolation Principle: computational Hosts are not directly
 network-addressable. They communicate locally with appointed Porters, which
@@ -49,6 +49,7 @@ python3 -m unittest -v
 ./tests/docker_generation1.sh
 ./tests/docker_generation2.sh
 ./tests/docker_generation3.sh
+./tests/docker_generation4.sh
 ```
 
 HarmonicDB is the first real Butterfly Host migrated behind a Porter. Its
@@ -71,6 +72,15 @@ executions, then separately chooses collection and continuation. The page expose
 when a Return was held, when a later Round observed it, and how much latency
 belonged to Host attention. PORTER remains silent and knows nothing of the
 journey.
+
+Generation IV separates remote fact from local knowledge. The receiving Porter
+atomically publishes one canonical acceptance fact containing the original
+Package identity. Its inbox is a recoverable projection. The originating Porter
+records every carriage attempt as `ACCEPTANCE_UNKNOWN` and may claim
+`REMOTE_ACCEPTANCE_KNOWN` only after durably retaining a precise Receipt from the
+recipient. Repeated carriage of the same Package recovers the same acceptance;
+it does not invent a second correspondence. ROUNDS expose this knowledge without
+waking the Host or changing its attention policy.
 
 ## Passport First Contact
 

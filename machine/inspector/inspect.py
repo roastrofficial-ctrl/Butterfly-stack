@@ -32,6 +32,8 @@ print("\nFIND ME                        READY")
 work_root = Path("/evidence/work/location")
 ticket_root = Path("/evidence/find-me/tickets")
 lodgement_root = Path("/evidence/find-me/lodgements/lodged")
+carriage_root = Path("/evidence/find-me/carriage")
+acceptance_root = Path("/evidence/harmonicdb/acceptances")
 works = []
 for path in work_root.glob("LW-*.json") if work_root.exists() else []:
     try: works.append(json.loads(path.read_text()))
@@ -39,6 +41,20 @@ for path in work_root.glob("LW-*.json") if work_root.exists() else []:
 works.sort(key=lambda value: value.get("created_at_ms", 0), reverse=True)
 print(f"\nPORTER LODGEMENTS             {len(list(lodgement_root.glob('LG-*.json'))) if lodgement_root.exists() else 0}")
 print(f"COLLECTION TICKETS            {len(list(ticket_root.glob('CT-*.json'))) if ticket_root.exists() else 0}")
+knowledge = []
+for path in carriage_root.glob("PKG-*.json") if carriage_root.exists() else []:
+    try: knowledge.append(json.loads(path.read_text()))
+    except Exception: pass
+knowledge.sort(key=lambda value: (value.get("attempts") or [{}])[-1].get("began_at_ms", 0), reverse=True)
+print(f"REMOTE ACCEPTANCE FACTS       {len(list(acceptance_root.glob('PKG-*.json'))) if acceptance_root.exists() else 0}")
+if knowledge:
+    carriage = knowledge[0]
+    remote_fact = (acceptance_root / f"{carriage['package']}.json").exists()
+    print(f"LATEST CARRIAGE               {carriage['package']} · {len(carriage.get('attempts', []))} attempt(s)")
+    print(f"REMOTE REALITY                {'RECIPIENT PORTER ACCEPTED' if remote_fact else 'NOT OBSERVED HERE'}")
+    print(f"LOCAL KNOWLEDGE               {carriage.get('knowledge')}")
+    if "acceptance_evidence" in carriage:
+        print(f"ACCEPTANCE EVIDENCE           {carriage['acceptance_evidence'].get('acceptance')}")
 if works:
     work = works[0]
     print(f"LATEST JOURNEY                {work.get('journey')} · {work.get('stage')}")

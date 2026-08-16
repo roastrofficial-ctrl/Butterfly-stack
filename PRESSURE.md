@@ -2,6 +2,65 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v0.8 — PORTER Generation IV: Carriage Knowledge
+
+The ugly case was reproduced deliberately. HarmonicDB's Porter durably accepted
+one real HDBE Package, but the acceptance evidence was prevented from becoming
+durable at Find Me's Porter. After restart, remote acceptance was true while the
+originating side could honestly claim only `ACCEPTANCE_UNKNOWN`. Find Me learned
+nothing until a later Round inspected its Collection Ticket.
+
+The recipient's canonical `AC-…` acceptance contains the Package, digest,
+recipient and acceptance time. It is the remote threshold; the inbox is its
+recoverable projection. The sender's carriage journal records attempts, but an
+attempt is not acceptance knowledge. Only durable retention of the recipient's
+Receipt changes local knowledge to `REMOTE_ACCEPTANCE_KNOWN`.
+
+The Receipt now attests only that the named Porter durably accepted
+responsibility for the exact Package identity and digest at a stated time. It
+does not mean bytes merely arrived, the Package is still held, the recipient
+Host collected it, application processing succeeded, or a Return exists. HTTP
+202 has no PORTER meaning until its evidence survives locally.
+
+When evidence disappeared, the sender retained uncertainty and the original
+Package for another attempt; it did not invent `REFUSED`. Repeated carriage kept
+the same `PKG-…`. The recipient recognised its existing acceptance and returned
+the same `AC-…`; it neither created another correspondence fact nor claimed the
+application executed only once. A reused Package identity with different bytes
+was rejected. Identity proved more important than byte equality because it names
+the single lodged correspondence whose evidence is being repeated.
+
+The failure matrix covered absence before carriage, interruption after attempt,
+remote acceptance before evidence, loss before local retention, interruption
+after retention, delayed and repeated attempts, recipient recovery of a missing
+inbox projection, independent Porter restarts, invalid transport success, and
+the final isolated-Host collection/Return path. Conventional write-ahead facts,
+stable identity, retry and acknowledgement ideas were useful. “Delivery
+guarantee”, exactly-once, and transport success were misleading because each
+collapsed distinct knowledge boundaries.
+
+The unexpectedly elegant result was that repetition repaired knowledge without
+requiring a second correspondence fact. The unexpectedly difficult part was
+naming a Receipt narrowly enough: even perfect acceptance evidence becomes a
+historical statement as soon as recipient custody changes.
+
+The facts at the boundaries are now explicit:
+
+- the originating Host knows it lodged correspondence and can later observe its
+  Porter's carriage knowledge through a Round;
+- the originating Porter knows its attempts and only retained acceptance evidence;
+- the receiving Porter knows its canonical acceptance and local custody projection;
+- the receiving Host knows nothing until it explicitly collects.
+
+The historical lesson is:
+
+> **Fact can outrun knowledge.**
+
+The single pressure that has earned Generation V is **Responsibility After
+Acceptance**: what happens to custody knowledge when a recipient Host collects,
+without equating collection with processing or creating a Host notification
+path. It is proposed here and not implemented.
+
 ## v0.7 — PORTER Generation III and ROUNDS
 
 ### Lodgement Integrity
