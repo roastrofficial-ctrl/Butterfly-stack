@@ -33,7 +33,7 @@ you more.** Stop only the source with `docker compose stop lucida`: existing
 canvases and local zoom remain, while a closer-Sight request fails without a
 raster fallback.
 
-## PORTER Generation I
+## PORTER Generations I–II
 
 PORTER tests the Host Isolation Principle: computational Hosts are not directly
 network-addressable. They communicate locally with appointed Porters, which
@@ -47,15 +47,18 @@ Generation I proves the strong form with two `network_mode: none` fixture Hosts:
 cd systems/porter
 python3 -m unittest -v
 ./tests/docker_generation1.sh
+./tests/docker_generation2.sh
 ```
 
 HarmonicDB is the first real Butterfly Host migrated behind a Porter. Its
 container has no IP address, route, listener, or membership of either Butterfly
-network. Find Me deposits HDBE/1 calls into its local mail slot; the HarmonicDB
-Host later collects them and deposits Returns. HTTP no longer carries this
-boundary, although Find Me's current Laravel adapter still waits synchronously
-for the Return. See `systems/porter/README.md` for PORTER/1 and the proposed—not
-implemented—Generation II Collection Ticket.
+network. Find Me now receives a durable Collection Ticket when it deposits an
+opaque HDBE/1 call and ends that execution without waiting. A later MailWeb
+request explicitly inspects and collects the Return; append and observation are
+two distinct pieces of correspondence across multiple executions. PORTER owns
+the carriage and ticket lifecycle, Find Me owns its continuation record, and
+HarmonicDB remains unaware of PORTER. See `systems/porter/README.md` for the
+observed crash, duplicate, expiry, abandonment and collection semantics.
 
 ## Passport First Contact
 

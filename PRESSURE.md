@@ -2,6 +2,61 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v0.6 — PORTER Generation II
+
+Generation I removed direct addressing but left Find Me synchronously staring at
+its mail slot. Generation II replaces that hidden wait with a durable Collection
+Ticket. The deposit execution ends immediately; inspection and collection occur
+only in later, explicit Find Me executions. Find Me keeps a separate continuation
+ledger because deciding what an HDBE Return means is application work, not a
+communications concern. HarmonicDB's Laravel package has consequently lost all
+PORTER configuration and code.
+
+The real machine demonstrated the uncomfortable case, not merely the happy path:
+a Find Me execution lodged an HDBE `info` Package in about 1.2 ms and exited;
+HarmonicDB later processed it while the requesting Host was absent; the Find Me
+Porter was stopped and restarted; then a fresh Host execution inspected
+`RETURN_HELD` and collected the surviving HDBE/1 Return. HarmonicDB remained
+`network_mode: none` throughout.
+
+Tests also forced the lifecycle to answer questions that Generation I postponed:
+
+- duplicate Returns remain evidence and do not imply duplicate computation;
+- one competing collector wins deterministically, while others observe a
+  contest or the already-recorded collection;
+- expiry is an observed condition, not retroactive cancellation;
+- abandonment ends application intention but does not destroy a late Return;
+- Ticket state and event history survive process restart.
+
+The unexpected pressure was filesystem identity. Porter and Host containers can
+share a volume without sharing a user, so lock-file permissions are part of the
+Host IPC ABI. This is now explicit rather than an accidental Docker property.
+
+What became unexpectedly elegant was inspection: because arrival is silent,
+expiry, a held Return, and abandonment all become facts a later Host execution
+observes through the same boundary. What remained unexpectedly difficult was the
+old call-shaped application journey. Laravel could end cleanly after lodgement,
+but Find Me needed an application-owned ledger and explicit continuation pages;
+PORTER could not honestly manufacture either of those responsibilities.
+
+The implemented Ticket became durable local evidence connecting one deposited
+Package to any Returns that cite it. It is not a transferable promise, a remote
+execution handle, or proof of recipient collection. Multiple Returns can attach
+to it, inspection does not consume them, and collection records which one won.
+Exactly-once processing, retry policy, application completion, and cancellation
+of work already in carriage therefore do not belong in PORTER. The fundamental
+failures now visible are ambiguity after a partial lodgement, duplicate
+computation outside the carriage boundary, and an application crash after
+collection but before it records its own continuation.
+
+### Most interesting Generation III
+
+Investigate **Lodgement Integrity**, but do not implement it in this generation.
+Ticket creation, Package association and outgoing deposit are currently separate
+durable writes. A crash between them can orphan one fact. The next experiment is
+a recoverable local Porter lodgement ceremony that preserves Host silence and
+does not make PORTER responsible for application transactions.
+
 ## v0.5 — PORTER Generation I
 
 ### Before implementation

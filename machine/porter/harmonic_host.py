@@ -12,6 +12,8 @@ from porter.protocol import atomic_write, package, validate
 ipc=Path(os.getenv("PORTER_IPC","/porter"));inbox=ipc/"inbox";outgoing=ipc/"outgoing";collected=ipc/"collected"
 for folder in (inbox,outgoing,collected):folder.mkdir(parents=True,exist_ok=True)
 service=HDBEService({"find_me":"/data/find-me.hws","find_me_private":"/data/find-me-private-symbol.hws"})
+def record(event_type,package_id,details=None):
+    with (ipc/"host-events.jsonl").open("a") as stream:stream.write(json.dumps({"event":event_type,"at_ms":int(time.time()*1000),"host":"harmonicdb","package":package_id,**({"details":details} if details else {})},separators=(",",":"))+"\n");stream.flush();os.fsync(stream.fileno())
 (ipc/"host.ready").write_text("HarmonicDB waits to COLLECT; it exposes no network listener.\n")
 while True:
     for path in sorted(inbox.glob("PKG-*.json")):
@@ -19,6 +21,7 @@ while True:
         try:path.rename(claimed)
         except FileNotFoundError:continue
         request=validate(json.loads(claimed.read_text()))
+        record("RECIPIENT_COLLECTED",request["package"])
         if request["kind"]!="hdbe.call" or not request.get("reply_to"):
             claimed.rename(collected/(path.stem+".refused"));continue
         started=time.perf_counter()
@@ -27,6 +30,6 @@ while True:
             envelope={"ok":True,"protocol":ENGINE_PROTOCOL,"transport":"PORTER/1","collection_wait_ms":call.get("deposited_at_ms") and round(time.time()*1000-call["deposited_at_ms"],2),"host_processing_ms":round((time.perf_counter()-started)*1000,3),"result":_json(result)}
         except HarmonicDBError as exc:envelope={"ok":False,"protocol":ENGINE_PROTOCOL,"transport":"PORTER/1","error":exc.as_dict()}
         except Exception as exc:envelope={"ok":False,"protocol":ENGINE_PROTOCOL,"transport":"PORTER/1","error":{"code":"HostFailure","message":str(exc)}}
-        atomic_write(outgoing,package("harmonicdb","find-me","porter.return",{"envelope":envelope},in_reply_to=request["package"]))
+        returned=package("harmonicdb","find-me","porter.return",{"envelope":envelope},in_reply_to=request["package"]);atomic_write(outgoing,returned);record("RETURN_DEPOSITED",returned["package"],{"in_reply_to":request["package"]})
         claimed.rename(collected/(path.stem+".json"))
     time.sleep(.05)

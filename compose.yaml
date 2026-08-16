@@ -57,6 +57,9 @@ services:
       dockerfile: machine/lucida/Dockerfile
     ports:
       - "127.0.0.1:${LUCIDA_PORT:-8077}:8077"
+    environment:
+      LUCIDA_PREPARED_DIR: /lucida-state/prepared
+    volumes: [lucida-prepared:/lucida-state]
     networks: [butterfly]
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:8077/health',timeout=3).status == 200"]
@@ -64,6 +67,13 @@ services:
       timeout: 4s
       retries: 12
       start_period: 15s
+
+  find-me-state:
+    image: alpine:3.22
+    command: ["sh", "-c", "mkdir -p /state/location && chmod -R 0777 /state"]
+    volumes: [find-me-work:/state]
+    network_mode: none
+    restart: "no"
 
   find-me:
     build:
@@ -77,7 +87,8 @@ services:
       GPSERVERS_URL: http://gpservers:8090
       HARMONICDB_URL: http://harmonicdb:8787
       HARMONICDB_TIMEOUT: "150"
-      HARMONICDB_PORTER_DIR: /porter
+      PORTER_IPC: /porter
+      FIND_ME_WORK_DIR: /app-state/location
       PASSPORT_VERIFIER_URL: http://passport-verifier:8790
       LUCIDA_URL: http://lucida:8077
       MAILWEB_MAILPIT_URL: http://mailpit:8025
@@ -85,6 +96,8 @@ services:
       MAILWEB_SMTP_PORT: "1025"
       MAILWEB_PUBLISHER_MAILBOX: find-me@butterfly.local
     depends_on:
+      find-me-state:
+        condition: service_completed_successfully
       porter-find-me:
         condition: service_healthy
       lucida:
@@ -98,7 +111,7 @@ services:
       mailpit:
         condition: service_healthy
     networks: [butterfly]
-    volumes: [porter-find-me-ipc:/porter]
+    volumes: [porter-find-me-ipc:/porter, find-me-work:/app-state]
     healthcheck:
       test: ["CMD", "php", "artisan", "find-me:health"]
       interval: 5s
@@ -117,7 +130,7 @@ services:
       mailpit:
         condition: service_healthy
     networks: [butterfly]
-    volumes: [porter-find-me-ipc:/porter]
+    volumes: [porter-find-me-ipc:/porter, find-me-work:/app-state]
 
   mailweb:
     build:
@@ -277,3 +290,5 @@ volumes:
   passport-trust:
   porter-find-me-ipc:
   porter-harmonicdb-ipc:
+  find-me-work:
+  lucida-prepared:

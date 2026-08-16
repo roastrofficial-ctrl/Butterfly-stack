@@ -7,6 +7,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 # MailWeb is consumed as a package. Its demo application is not part of this image.
 COPY systems/mailweb/packages/laravel-mailweb /systems/mailweb/packages/laravel-mailweb
 COPY systems/harmonicdb/packages/laravel-harmonicdb /systems/harmonicdb/packages/laravel-harmonicdb
+COPY systems/porter/clients/php /systems/porter/clients/php
 
 WORKDIR /app
 COPY apps/find-me/composer.json ./

@@ -22,6 +22,11 @@ final class LocationRun extends Model
 
     public static function fromPositioningResult(string $journey, array $result): self
     {
+        return self::create($journey,self::attributesFromPositioningResult($result));
+    }
+
+    public static function attributesFromPositioningResult(array $result): array
+    {
         $successful = array_values(array_filter(
             $result['measurements'] ?? [],
             fn (array $measurement) => ($measurement['success_rate'] ?? 0) > 0,
@@ -29,7 +34,7 @@ final class LocationRun extends Model
         $mean = fn (string $key): float => $successful === [] ? 0.0 : array_sum(array_column($successful, $key)) / count($successful);
         $fix = $result['fix'];
 
-        return self::create($journey, [
+        return [
             'latitude' => (float) $fix['latitude'],
             'longitude' => (float) $fix['longitude'],
             'confidence' => (float) $fix['confidence'],
@@ -38,6 +43,6 @@ final class LocationRun extends Model
             'mean_jitter_ms' => $mean('jitter_ms'),
             'network_quality' => (float) ($result['network_weather']['nqi'] ?? 0),
             'signals_acquired' => (float) count($successful),
-        ]);
+        ];
     }
 }
