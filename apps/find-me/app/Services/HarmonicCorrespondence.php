@@ -24,6 +24,11 @@ final class HarmonicCorrespondence
         return $this->tickets->inspect($ticket);
     }
 
+    public function makeRound(array $tickets): array
+    {
+        return $this->tickets->makeRound($tickets);
+    }
+
     public function abandon(string $ticket): array
     {
         return $this->tickets->abandon($ticket);

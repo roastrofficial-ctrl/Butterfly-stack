@@ -28,3 +28,26 @@ counterfactual = [spec for spec in manifest["systems"].values() if spec["status"
 print(f"\nHOST DEPENDENCIES              {len(hosts)}")
 print(f"COUNTERFACTUAL SYSTEMS         {len(counterfactual)}")
 print("\nFIND ME                        READY")
+
+work_root = Path("/evidence/work/location")
+ticket_root = Path("/evidence/find-me/tickets")
+lodgement_root = Path("/evidence/find-me/lodgements/lodged")
+works = []
+for path in work_root.glob("LW-*.json") if work_root.exists() else []:
+    try: works.append(json.loads(path.read_text()))
+    except Exception: pass
+works.sort(key=lambda value: value.get("created_at_ms", 0), reverse=True)
+print(f"\nPORTER LODGEMENTS             {len(list(lodgement_root.glob('LG-*.json'))) if lodgement_root.exists() else 0}")
+print(f"COLLECTION TICKETS            {len(list(ticket_root.glob('CT-*.json'))) if ticket_root.exists() else 0}")
+if works:
+    work = works[0]
+    print(f"LATEST JOURNEY                {work.get('journey')} · {work.get('stage')}")
+    rounds = work.get("rounds", [])
+    print(f"HOST ROUNDS                   {len(rounds)}")
+    if rounds:
+        last = rounds[-1]
+        observation = (last.get("observations") or [last])[0]
+        print(f"LAST ROUND                    {observation.get('state', observation.get('observed_state'))} · {last.get('round')} · initiated by {last.get('initiated_by')}")
+        if "observation_latency_ms" in observation:
+            print(f"CARRIAGE LATENCY              {observation.get('carriage_latency_ms', 'unknown')} ms")
+            print(f"OBSERVATION LATENCY           {observation['observation_latency_ms']} ms")

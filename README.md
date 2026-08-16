@@ -26,14 +26,14 @@ protocol interpretation, observer state and the receiving Draughtsman, but owns
 no Find Me asset catalogue. Postbox supplies only a generic capability surface.
 The final canvas remains an honestly labelled **HOST DISPLAY SURFACE**.
 
-The hero begins at Pass II and offers an explicit closer look. The map begins at
+The hero begins with a bounded high-detail release and offers an explicit closer look. The map begins at
 Pass I; its GPServers estimate and uncertainty are a locally composed overlay.
 **Zooming enlarges what you already know. Looking closer asks the source to tell
 you more.** Stop only the source with `docker compose stop lucida`: existing
 canvases and local zoom remain, while a closer-Sight request fails without a
 raster fallback.
 
-## PORTER Generations I–II
+## PORTER Generations I–III and ROUNDS
 
 PORTER tests the Host Isolation Principle: computational Hosts are not directly
 network-addressable. They communicate locally with appointed Porters, which
@@ -48,6 +48,7 @@ cd systems/porter
 python3 -m unittest -v
 ./tests/docker_generation1.sh
 ./tests/docker_generation2.sh
+./tests/docker_generation3.sh
 ```
 
 HarmonicDB is the first real Butterfly Host migrated behind a Porter. Its
@@ -59,6 +60,17 @@ two distinct pieces of correspondence across multiple executions. PORTER owns
 the carriage and ticket lifecycle, Find Me owns its continuation record, and
 HarmonicDB remains unaware of PORTER. See `systems/porter/README.md` for the
 observed crash, duplicate, expiry, abandonment and collection semantics.
+
+Generation III gives lodgement one atomic threshold. A canonical `LG-…` fact
+binds Package and Ticket identities before any recoverable projection is made;
+a restarted Porter can reconstruct missing Ticket, association and outgoing
+facts. PORTER's Host-side clients now share `PORTER-ROUNDS/1`: a durable `RD-…`
+observation over one or many Collection Tickets. During an active positioning
+journey, Find Me chooses when to make those ROUNDS through distinct MailWeb
+executions, then separately chooses collection and continuation. The page exposes
+when a Return was held, when a later Round observed it, and how much latency
+belonged to Host attention. PORTER remains silent and knows nothing of the
+journey.
 
 ## Passport First Contact
 
@@ -95,7 +107,7 @@ To exercise the vertical journey without the graphical renderer, use Postbox fro
 docker compose run --rm mailweb --transport smtp --timeout 180s mailweb://find-me.local/locate
 ```
 
-## Butterfly 0.5
+## Butterfly 0.7
 
 ```text
 ✓ MailWeb

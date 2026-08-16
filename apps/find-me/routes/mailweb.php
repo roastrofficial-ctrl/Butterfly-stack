@@ -5,6 +5,7 @@ use App\Models\LocationRun;
 use App\Models\PrivateLocationRun;
 use App\Services\HarmonicCorrespondence;
 use App\Services\LocationWork;
+use App\Services\LocationRounds;
 use MailWeb\Laravel\Facades\MailWeb;
 use MailWeb\Laravel\Http\MailWebRequest;
 
@@ -176,7 +177,7 @@ MailWeb::get('/locate', function (MailWebRequest $request) use ($site) {
         $work = LocationWork::create(['journey' => $journey, 'stage' => 'append_outstanding', 'ticket' => $ticket['ticket'], 'positioning' => $result]);
         return MailWeb::page('Find Me — correspondence lodged', 202)
             ->template($site)
-            ->slot('content', MailWeb::page('Correspondence lodged')->heading('POSITIONING WORK LODGED', variant: 'display')->paragraph("Find Me deposited HarmonicDB work and ended this execution without waiting for an answer.")->paragraph("Package {$ticket['package']} · Collection Ticket {$ticket['ticket']} · Journey {$journey}")->button('Inspect outstanding correspondence', '/locate/correspondence?work=' . $work['work'], 'prominent')->button('View all correspondence', '/correspondence'));
+            ->slot('content', MailWeb::page('Correspondence lodged')->heading('POSITIONING WORK LODGED', variant: 'display')->paragraph("Find Me deposited HarmonicDB work and ended this execution without waiting for an answer.")->paragraph("Package {$ticket['package']} · Collection Ticket {$ticket['ticket']} · Lodgement {$ticket['lodgement']} · Journey {$journey}")->paragraph('The active journey is attentive. Find Me will make its next Round from a new execution; no Return can wake it.')->revisit('/locate/correspondence?work=' . $work['work'] . '&round=1', 650)->button('Make a Round now', '/locate/correspondence?work=' . $work['work'] . '&round=1', 'prominent')->button('View all correspondence', '/correspondence'));
     } catch (Throwable $error) {
         return MailWeb::page('Find Me — no fix')
             ->template($site)
@@ -191,33 +192,23 @@ MailWeb::get('/locate', function (MailWebRequest $request) use ($site) {
 
 MailWeb::get('/locate/correspondence', function (MailWebRequest $request) use ($site, $prepareSight) {
     try {
-        $work = LocationWork::load((string)$request->query('work'));
-        $porter = new HarmonicCorrespondence;
-        if ($work['stage'] === 'complete') {
-            $collection = $work['observation'];
-        } else {
-            $status = $porter->inspect($work['ticket']);
-            if (in_array($status['state'], ['OUTSTANDING', 'EXPIRED_OBSERVED', 'ABANDONED', 'ABANDONED_WITH_RETURN'], true)) {
-                $page = MailWeb::page('Outstanding correspondence')->heading('CORRESPONDENCE ' . $status['state'], variant: 'display')->paragraph("Ticket {$status['ticket']} · Package {$status['package']}")->paragraph('Inspecting is not collecting. This MailWeb execution observed the Porter and can now end again.');
-                foreach (array_slice($status['events'], -6) as $event) $page->paragraph(($event['event'] ?? 'EVENT') . ' · ' . ($event['at_ms'] ?? 0));
-                if ($status['state'] === 'OUTSTANDING') $page->button('Inspect again', '/locate/correspondence?work=' . $work['work'], 'prominent')->button('Abandon this work', '/locate/abandon?work=' . $work['work']);
-                elseif ($status['state'] === 'ABANDONED_WITH_RETURN') $page->paragraph('A late Return remains held as evidence. PORTER did not discard it or revive the application journey.');
-                return MailWeb::page('Find Me — outstanding', 202)->template($site)->slot('content', $page);
+        $work = (new LocationRounds)->make((string)$request->query('work'));
+        if ($work['stage'] !== 'complete') {
+            $round = $work['last_round'];
+            $observation = $round['observations'][0];
+            $page = MailWeb::page('Making rounds')->heading('FIND ME MADE ITS ROUNDS', variant: 'display')->paragraph("Round {$round['sequence']} · {$round['round']} · Ticket {$observation['ticket']} · {$observation['state']}")->paragraph('This Host execution crossed its local Porter boundary voluntarily. Arrival did not cause it.');
+            if (isset($observation['return_held_at_ms'])) {
+                $carriage = isset($observation['carriage_latency_ms']) ? $observation['carriage_latency_ms'] . ' ms' : 'unknown for pre-Generation III correspondence';
+                $page->paragraph("Return held at {$observation['return_held_at_ms']} · observed at {$round['observed_at_ms']} · carriage {$carriage} · attention {$observation['observation_latency_ms']} ms");
             }
-            $collection = $porter->collect($work['ticket']);
-            if (!isset($collection['envelope'])) throw new RuntimeException('The held Return was contested during collection.');
-            if ($work['stage'] === 'append_outstanding') {
-                $work['append'] = $collection['envelope']['result']['evidence']['execution_id'];
-                $ticket = $porter->lodge('observe', ['store' => 'find_me', 'waves' => array_keys(LocationRun::attributesFromPositioningResult($work['positioning'])), 'coordinate' => $work['journey'], 'trace' => true]);
-                $work['stage'] = 'observe_outstanding';
-                $work['ticket'] = $ticket['ticket'];
-                LocationWork::save($work);
-                return MailWeb::page('Find Me — next correspondence lodged', 202)->template($site)->slot('content', MailWeb::page('Observation lodged')->heading('APPEND RETURN COLLECTED', variant: 'display')->paragraph("Find Me collected {$collection['return']}, recorded the append, deposited a separate observation Package, and can end again.")->paragraph("New Ticket {$ticket['ticket']} · Package {$ticket['package']}")->button('Inspect observation correspondence', '/locate/correspondence?work=' . $work['work'], 'prominent'));
-            }
-            $work['stage'] = 'complete';
-            $work['observation'] = $collection;
-            LocationWork::save($work);
+            if ($work['stage'] === 'observe_outstanding') $page->paragraph('The append Return was explicitly collected. Find Me lodged a separate observation and ended this execution.');
+            else $page->paragraph('Nothing relevant was collectable. Find Me ended this Round and will decide when to visit again.');
+            $nextRound = ((int)$request->query('round', 0)) + 1;
+            $nextReference = '/locate/correspondence?work=' . $work['work'] . '&round=' . $nextRound;
+            $page->revisit($nextReference, 650)->button('Make the next Round now', $nextReference, 'prominent')->button('Abandon this work', '/locate/abandon?work=' . $work['work']);
+            return MailWeb::page('Find Me — making rounds', 202)->template($site)->slot('content', $page);
         }
+        $collection = $work['observation'];
         $result = $work['positioning'];
         $fix = $result['fix'];
         $measures = $collection['envelope']['result']['measurements'];

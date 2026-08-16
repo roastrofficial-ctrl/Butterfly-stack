@@ -275,6 +275,10 @@ services:
       find-me: {condition: service_healthy}
       mailweb: {condition: service_healthy}
     networks: [butterfly, porter-fabric]
+    volumes:
+      - porter-find-me-ipc:/evidence/find-me:ro
+      - porter-harmonicdb-ipc:/evidence/harmonicdb:ro
+      - find-me-work:/evidence/work:ro
     restart: "no"
 
 networks:

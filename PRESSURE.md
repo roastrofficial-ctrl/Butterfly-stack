@@ -2,6 +2,63 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v0.7 — PORTER Generation III and ROUNDS
+
+### Lodgement Integrity
+
+"Lodged" ultimately had to mean one thing: the canonical Lodgement fact crossed
+the local Porter boundary by atomic publication. The Host creates all identities
+while drafting, but they have no public force before that threshold. Once the
+`LG-…` fact exists, the Porter owns durable truth and recovery; Ticket JSON,
+Package association and outgoing Package are projections rather than competing
+accounts of reality.
+
+The crash matrix interrupted immediately after LODGED, after Ticket materialisation,
+after association, and after outgoing deposit. A fresh process recovered every
+case as `DEFINITELY_LODGED`; absence of the canonical fact remained
+`NEVER_LODGED`. Local ambiguity disappeared rather than acquiring a euphemistic
+state. Atomic rename and a write-ahead-style canonical record were useful
+familiar ideas. Rollback, two-phase commit and application transactions were not:
+there is no promise to undo correspondence after it crosses the threshold.
+
+The remaining fundamental ambiguity moved outward. If a recipient Porter accepts
+a Package and the sender dies before retaining its Receipt, the local Lodgement
+is certain but carriage knowledge is not. That has earned the candidate
+Generation IV: **Carriage Knowledge**. It must not be confused with exactly-once
+HarmonicDB execution.
+
+The historical lesson is:
+
+> **Lodgement has a threshold.**
+
+### ROUNDS
+
+ROUNDS remains outside the PORTER/1 wire protocol. Find Me's active-journey correspondence asks
+Postbox for a bounded revisit cadence. Each revisit creates a distinct MailWeb
+request and therefore a new Find Me execution; that execution chooses to inspect
+its local Porter through the standard client Round vocabulary, records the observed state, and ends. Only a Round that observes
+`RETURN_HELD` explicitly collects and advances the application ledger. No Porter
+initiates IPC toward either Host.
+
+The experience became usable without pretending to be synchronous, but attention
+was not free. The nominal 650 ms policy is bounded by MailWeb/SMTP execution time,
+so a Round can cost seconds. This made application-specific cadence feel more
+important, not less. Dormant work makes no ROUNDS; active human work is attentive.
+The ledger records Return-held, observed, collected and continued times, making
+observation latency a first-class measurement without making "attention" a
+PORTER concept.
+
+A crash after observation is harmless to correspondence: the Return remains
+held. A crash after collection but before continuation is an application recovery
+problem; PORTER retains which Package was collected but cannot declare the
+journey complete. Tests found no accidental push path.
+
+ROUNDS has earned standard PORTER client vocabulary: an `RD-…` identity, an
+explicit boundary visit over one or many Tickets, and a durable
+`PORTER-ROUNDS/1` observation journal. It has not earned a PORTER wire verb.
+Cadence, collection, and continuation remain Host policy, allowing different
+Hosts to express genuinely different attention needs through the same ceremony.
+
 ## v0.6 — PORTER Generation II
 
 Generation I removed direct addressing but left Find Me synchronously staring at
