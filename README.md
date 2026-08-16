@@ -33,7 +33,7 @@ you more.** Stop only the source with `docker compose stop lucida`: existing
 canvases and local zoom remain, while a closer-Sight request fails without a
 raster fallback.
 
-## PORTER Generations I–IV and ROUNDS
+## PORTER Generations I–V and ROUNDS
 
 PORTER tests the Host Isolation Principle: computational Hosts are not directly
 network-addressable. They communicate locally with appointed Porters, which
@@ -50,6 +50,7 @@ python3 -m unittest -v
 ./tests/docker_generation2.sh
 ./tests/docker_generation3.sh
 ./tests/docker_generation4.sh
+./tests/docker_generation5.sh
 ```
 
 HarmonicDB is the first real Butterfly Host migrated behind a Porter. Its
@@ -81,6 +82,14 @@ records every carriage attempt as `ACCEPTANCE_UNKNOWN` and may claim
 recipient. Repeated carriage of the same Package recovers the same acceptance;
 it does not invent a second correspondence. ROUNDS expose this knowledge without
 waking the Host or changing its attention policy.
+
+Generation V gives Host-initiated Collection its own threshold. The immutable
+`CL-…` fact contains the exact accepted Package and records its recoverable
+transfer from recipient Porter custody to recipient Host custody. Inbox,
+collected Package and Package-to-Collection association are projections repaired
+from that fact. `LG`, `AC`, and `CL` remain historical; none is mutated into a
+global status. Collection transfers custody, not application meaning, and is not
+propagated back to the sender.
 
 ## Passport First Contact
 

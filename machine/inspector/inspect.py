@@ -34,6 +34,8 @@ ticket_root = Path("/evidence/find-me/tickets")
 lodgement_root = Path("/evidence/find-me/lodgements/lodged")
 carriage_root = Path("/evidence/find-me/carriage")
 acceptance_root = Path("/evidence/harmonicdb/acceptances")
+collection_root = Path("/evidence/harmonicdb/collections/facts")
+application_root = Path("/evidence/harmonicdb-data/porter-application")
 works = []
 for path in work_root.glob("LW-*.json") if work_root.exists() else []:
     try: works.append(json.loads(path.read_text()))
@@ -47,6 +49,7 @@ for path in carriage_root.glob("PKG-*.json") if carriage_root.exists() else []:
     except Exception: pass
 knowledge.sort(key=lambda value: (value.get("attempts") or [{}])[-1].get("began_at_ms", 0), reverse=True)
 print(f"REMOTE ACCEPTANCE FACTS       {len(list(acceptance_root.glob('PKG-*.json'))) if acceptance_root.exists() else 0}")
+print(f"RECIPIENT COLLECTION FACTS    {len(list(collection_root.glob('CL-*.json'))) if collection_root.exists() else 0}")
 if knowledge:
     carriage = knowledge[0]
     remote_fact = (acceptance_root / f"{carriage['package']}.json").exists()
@@ -55,6 +58,19 @@ if knowledge:
     print(f"LOCAL KNOWLEDGE               {carriage.get('knowledge')}")
     if "acceptance_evidence" in carriage:
         print(f"ACCEPTANCE EVIDENCE           {carriage['acceptance_evidence'].get('acceptance')}")
+    collection = None
+    for path in collection_root.glob("CL-*.json") if collection_root.exists() else []:
+        try:
+            candidate = json.loads(path.read_text())
+            if candidate.get("package", {}).get("package") == carriage["package"]: collection = candidate; break
+        except Exception: pass
+    if collection:
+        processed = (application_root / f"{collection['collection']}.json").exists()
+        print(f"CURRENT CUSTODY               RECIPIENT HOST · {collection['collection']}")
+        print(f"APPLICATION REALITY           {'RECORDED SEPARATELY' if processed else 'UNKNOWN TO PORTER'}")
+    elif remote_fact:
+        legacy_collected = (Path("/evidence/harmonicdb/collected") / f"{carriage['package']}.json").exists()
+        print(f"CURRENT CUSTODY               {'LEGACY COLLECTION — INDETERMINATE' if legacy_collected else 'RECIPIENT PORTER'}")
 if works:
     work = works[0]
     print(f"LATEST JOURNEY                {work.get('journey')} · {work.get('stage')}")

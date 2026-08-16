@@ -2,6 +2,62 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v0.9 — PORTER Generation V: Responsibility After Acceptance
+
+Custody survived, but only as a statement about recoverability and
+responsibility—not possession of bytes or successful computation. Before
+Collection, immutable `AC-…` plus the absence of a later Collection fact means
+the recipient Porter remains responsible and can reconstruct its inbox. When the
+Host voluntarily publishes `CL-…`, the exact Package becomes recoverable in Host
+custody and the Porter's current responsibility ends.
+
+Collection required a threshold because the old rename-plus-Ticket-update path
+could lose its explanation between writes. `CL` is created by the Host-side
+client at its local Porter boundary and retained as PORTER's immutable evidence
+of the crossing. The collected Package and Package-to-Collection association are
+projections. `AC` is never rewritten. Repeating Collection yields the same `CL`;
+it repairs evidence and projections rather than transferring custody again.
+
+The bastard crash occurred immediately after canonical `CL`, before HarmonicDB
+could retain application evidence or begin HDBE processing. At that instant the
+inbox projection could still coexist with the Collection fact, but canonical
+responsibility was not duplicated: `CL` was already decisive. Restart rebuilt
+the collected projection, removed the stale inbox projection, and returned the
+same Package identity to the Host. No state existed in which neither participant
+could recover it.
+
+The immutable history is now `LG` (origin Porter responsibility), `AC`
+(recipient Porter acceptance), then `CL` (recoverable Host custody). Current
+custody is reconstructed from those ordered facts. A Porter saying it currently
+“holds” correspondence means it has canonical acceptance, no later Collection,
+and can reproduce the inbox view. It does not mean the sender knows that state.
+
+Collection knowledge remained local. The origin Porter's Receipt stayed a true
+historical acceptance statement before and after recipient Collection; the
+Sender Host's later Round learned nothing new about collection. Exporting read
+receipts did not emerge as necessary.
+
+PORTER responsibility ends precisely when `CL` makes the exact Package
+recoverable to the Host. Application responsibility begins after that threshold.
+The separate HarmonicDB application record may say an HDBE attempt and Return
+lodgement were recorded, but PORTER cannot infer either from `CL`. A crash during
+an application effect but before its own commit remains fundamentally ambiguous.
+
+The unexpectedly elegant result was a third immutable fact rather than a custody
+state machine: historical facts plus recoverable projections were sufficient.
+The unexpectedly difficult distinction was that “Host custody” still does not
+mean a particular Host process remembers anything; it means a future Host
+execution can recover the Package.
+
+The historical lesson is:
+
+> **Collection transfers custody, not meaning.**
+
+The single pressure proposed for Generation VI is **Application Disposition**:
+whether a Host needs to record what it chose to do with collected correspondence,
+or whether that truth must remain wholly application-owned. It is not implemented,
+and it must not become inferred processing or exactly-once execution.
+
 ## v0.8 — PORTER Generation IV: Carriage Knowledge
 
 The ugly case was reproduced deliberately. HarmonicDB's Porter durably accepted

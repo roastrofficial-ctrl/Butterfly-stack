@@ -278,6 +278,7 @@ services:
     volumes:
       - porter-find-me-ipc:/evidence/find-me:ro
       - porter-harmonicdb-ipc:/evidence/harmonicdb:ro
+      - harmonicdb-data:/evidence/harmonicdb-data:ro
       - find-me-work:/evidence/work:ro
     restart: "no"
 
