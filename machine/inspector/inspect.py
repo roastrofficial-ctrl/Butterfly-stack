@@ -113,16 +113,29 @@ for root in introduction_roots:
     side = root.parent.name
     facts = list((root / "facts").glob("IN-*.json")) if root.exists() else []
     outstanding = 0; custody_bytes = 0
-    introduced = {}
+    introduced = {}; changes = {}
     for path in facts:
         try:
-            fact=json.loads(path.read_text());introduced[fact["sender"]]=int(fact["established_at_ms"])
+            fact=json.loads(path.read_text());introduced[fact["introduction"]]=fact
         except Exception: pass
+    for path in (root / "changes").glob("IN-*.json") if root.exists() else []:
+        try:
+            change=json.loads(path.read_text());changes[change["predecessor"]]=change
+        except Exception: pass
+    active={}
+    by_sender={}
+    for fact in introduced.values():by_sender.setdefault(fact["sender"],[]).append(fact)
+    for sender, candidates in by_sender.items():
+        current=min(candidates,key=lambda value:(value["established_at_ms"],value["introduction"]))
+        while current and current["introduction"] in changes:
+            successor=changes[current["introduction"]].get("successor");current=introduced.get(successor) if successor else None
+        active[sender]=current and current["introduction"]
     boundary = root.parent
     for path in (boundary / "acceptances").glob("PKG-*.json") if boundary.exists() else []:
         try:
             acceptance=json.loads(path.read_text()); package=acceptance["package"]
-            if package.get("from") in introduced and int(acceptance.get("accepted_at_ms",0)) >= introduced[package["from"]] and not (boundary/"collections"/"by-package"/package["package"]).exists():
+            if package.get("from") in by_sender and not (boundary/"collections"/"by-package"/package["package"]).exists():
                 outstanding += 1; custody_bytes += len(json.dumps(package,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode())
         except Exception: pass
-    print(f"{side.upper():12} {len(facts):3} standing · {outstanding:5} outstanding · {custody_bytes:9} bytes")
+    print(f"{side.upper():12} {len(facts):3} generations · {len(changes):3} changes · {outstanding:5} outstanding · {custody_bytes:9} bytes")
+    for sender in sorted(active):print(f"{'':12} {sender:16} current {active[sender] or 'TERMINATED'}")

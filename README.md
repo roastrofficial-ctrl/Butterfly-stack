@@ -66,6 +66,12 @@ the carriage and ticket lifecycle, Find Me owns its continuation record, and
 HarmonicDB remains unaware of PORTER. See `systems/porter/README.md` for the
 observed crash, duplicate, expiry, abandonment and collection semantics.
 
+PORTER 1.2 now treats compromise as succession of recipient-local standing. A
+stolen capability was accepted before the atomic change threshold, refused for
+new Packages afterward, and preserved for exact historical AC replay. Real
+Find Me correspondence continued through replacement standing while HarmonicDB
+remained networkless.
+
 Generation III gives lodgement one atomic threshold. A canonical `LG-…` fact
 binds Package and Ticket identities before any recoverable projection is made;
 a restarted Porter can reconstruct missing Ticket, association and outgoing

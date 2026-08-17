@@ -687,6 +687,25 @@ unchanged; Visas and Entry Stamps remain unimplemented.
 - Immediate change: derive a host-level `BF:…` correlation from the MailWeb request ID, generate `GPS:…`, and preserve the returned `HDB:…` execution ID in the MailWeb result.
 - Future pressure: identity propagation and inspection semantics. Do not mistake this for causal time.
 
+## PORTER 1.2: compromise changes current standing, not historical Introduction
+
+- Assumption attacked: a stolen possession capability could be made harmless by
+  marking its immutable Introduction revoked.
+- Consequence: mutating `IN` would make true establishment history lie, while
+  deletion would also damage restart and exact historical AC replay.
+- Resolution: a recipient-local immutable standing-change fact succeeds one
+  Introduction with another, or with no successor. Its atomic publication is
+  the precise old/new admission threshold. Budgets remain relationship-scoped
+  across every generation.
+- Trade-off: without unsolicited control, the recipient cannot react to
+  compromise it has not learned. Exposure lasts until deliberate local ceremony
+  or expiry. Technical Passport may establish fresh claims but remains absent
+  from ordinary Package admission.
+- Remaining pressure: replacement possession material was installed by a
+  coordinated local ceremony. How compromise knowledge and fresh authority
+  themselves travel—without trusting the stolen key or inventing global push—is
+  the next single experiment.
+
 ## Host dependency register
 
 | Dependency | Current host mechanism |
