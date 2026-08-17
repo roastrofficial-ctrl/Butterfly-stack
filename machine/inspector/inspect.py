@@ -139,3 +139,10 @@ for root in introduction_roots:
         except Exception: pass
     print(f"{side.upper():12} {len(facts):3} generations · {len(changes):3} changes · {outstanding:5} outstanding · {custody_bytes:9} bytes")
     for sender in sorted(active):print(f"{'':12} {sender:16} current {active[sender] or 'TERMINATED'}")
+    ceremonies=boundary/"ceremonies"
+    grants=list((ceremonies/"grants").glob("CG-*.json")) if ceremonies.exists() else []
+    lodged=list((ceremonies/"lodged").glob("CM-*.json")) if ceremonies.exists() else []
+    results=list((ceremonies/"results").glob("CM-*.json")) if ceremonies.exists() else []
+    pending=list((ceremonies/"pending").glob("CM-*.json")) if ceremonies.exists() else []
+    receipts=list((ceremonies/"receipts").glob("CM-*.json")) if ceremonies.exists() else []
+    print(f"{'':12} {len(grants):3} ceremony grants · {len(lodged):3} originated · {len(results):3} recipient results · {len(pending):3} pending · {len(receipts):3} results known")

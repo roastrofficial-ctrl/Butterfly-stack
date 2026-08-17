@@ -706,6 +706,23 @@ unchanged; Visas and Entry Stamps remain unimplemented.
   themselves travel—without trusting the stolen key or inventing global push—is
   the next single experiment.
 
+## PORTER 1.3: security knowledge has a journey
+
+- Assumption attacked: a remote correspondent could safely change standing by
+  using the same operational capability whose compromise motivated the change.
+- Consequence: the holder of a stolen key could otherwise install replacement
+  authority, terminate legitimate standing or redirect correspondence.
+- Resolution: the recipient establishes an immutable bounded ceremonial grant
+  distinct from Introduction authority. A durable CM is addressed to the Porter
+  itself; verified evidence may cause only recipient-local SC. It creates no
+  Host AC or CL and cannot wake the Host.
+- Knowledge result: an AC created after origin compromise knowledge but before
+  recipient SC remains valid history. Remote safety begins at local evidence,
+  not sender wall time.
+- Remaining pressure: HTTP conflates identity with endpoints, transport errors
+  with absence, and responses with tempting synchronous knowledge. Replacement
+  secret confidentiality also needs a real protected Porter substrate.
+
 ## Host dependency register
 
 | Dependency | Current host mechanism |

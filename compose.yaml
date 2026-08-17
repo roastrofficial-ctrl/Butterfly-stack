@@ -30,7 +30,7 @@ services:
       - '{"harmonicdb":"http://porter-harmonicdb:7070"}'
       - "--require-introductions"
       - "--relationships"
-      - '{"harmonicdb":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}'
+      - '{"harmonicdb":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800,"ceremony_secret":"BUTTERFLY-PORTER-CEREMONY-1","ceremony_expires_at":4102444800,"ceremony_max_changes":16,"ceremony_max_pending":8,"ceremony_terms":{"kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}}'
     volumes: [porter-find-me-ipc:/ipc]
     networks: [porter-fabric]
     healthcheck:
@@ -50,7 +50,7 @@ services:
       - '{"find-me":"http://porter-find-me:7070"}'
       - "--require-introductions"
       - "--relationships"
-      - '{"find-me":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["hdbe.call"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}'
+      - '{"find-me":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["hdbe.call"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800,"ceremony_secret":"BUTTERFLY-PORTER-CEREMONY-1","ceremony_expires_at":4102444800,"ceremony_max_changes":16,"ceremony_max_pending":8,"ceremony_terms":{"kinds":["hdbe.call"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}}'
     volumes: [porter-harmonicdb-ipc:/ipc]
     networks: [porter-fabric]
     healthcheck:

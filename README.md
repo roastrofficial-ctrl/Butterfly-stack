@@ -72,6 +72,12 @@ new Packages afterward, and preserved for exact historical AC replay. Real
 Find Me correspondence continued through replacement standing while HarmonicDB
 remained networkless.
 
+PORTER 1.3 makes the knowledge causing that succession travel. A separately
+granted, bounded ceremony is addressed to the recipient Porter itself; it never
+crosses Host AC or CL. The real delayed experiment preserved attacker ACs made
+before recipient knowledge, refused the old capability after SC, and continued
+real HDBE through successor authority.
+
 Generation III gives lodgement one atomic threshold. A canonical `LG-…` fact
 binds Package and Ticket identities before any recoverable projection is made;
 a restarted Porter can reconstruct missing Ticket, association and outgoing
