@@ -37,6 +37,7 @@ acceptance_root = Path("/evidence/harmonicdb/acceptances")
 collection_root = Path("/evidence/harmonicdb/collections/facts")
 application_root = Path("/evidence/harmonicdb-data/porter-application")
 round_root = Path("/evidence/find-me/rounds")
+introduction_roots = [Path("/evidence/find-me/introductions"), Path("/evidence/harmonicdb/introductions")]
 works = []
 for path in work_root.glob("LW-*.json") if work_root.exists() else []:
     try: works.append(json.loads(path.read_text()))
@@ -106,3 +107,22 @@ for label, root in resource_roots.items():
     size = sum(path.stat().st_size for path in files)
     print(f"{label:28} {len(files):7} files · {size:10} bytes")
 print(f"INSPECTOR RESOURCE SCAN        {(time.perf_counter() - resource_started) * 1000:.1f} ms")
+
+print("\nPORTER INTRODUCTIONS")
+for root in introduction_roots:
+    side = root.parent.name
+    facts = list((root / "facts").glob("IN-*.json")) if root.exists() else []
+    outstanding = 0; custody_bytes = 0
+    introduced = {}
+    for path in facts:
+        try:
+            fact=json.loads(path.read_text());introduced[fact["sender"]]=int(fact["established_at_ms"])
+        except Exception: pass
+    boundary = root.parent
+    for path in (boundary / "acceptances").glob("PKG-*.json") if boundary.exists() else []:
+        try:
+            acceptance=json.loads(path.read_text()); package=acceptance["package"]
+            if package.get("from") in introduced and int(acceptance.get("accepted_at_ms",0)) >= introduced[package["from"]] and not (boundary/"collections"/"by-package"/package["package"]).exists():
+                outstanding += 1; custody_bytes += len(json.dumps(package,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode())
+        except Exception: pass
+    print(f"{side.upper():12} {len(facts):3} standing · {outstanding:5} outstanding · {custody_bytes:9} bytes")

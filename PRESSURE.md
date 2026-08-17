@@ -2,6 +2,31 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v1.1 — PORTER Introductions Under Adversarial Lodgement
+
+An identity string was not enough to protect AC. PORTER now establishes explicit,
+immutable recipient-local standing and requires Package-bound possession before
+new responsibility. Technical Passport supplies offline-verifiable identity
+claims through an authority-neutral adapter; PORTER alone chooses Kind, expiry,
+Package size and outstanding count/byte terms.
+
+Ten thousand unknown deposits created no AC, no inbox projection, no files, no
+bytes and no durability barriers. They took 226 ms versus 10.91 seconds and
+20,004 files for accepted custody. Established correspondence paid a measured
+13.5% median admission tax. The first full outstanding-ID projection was O(N²)
+and was rejected; AC/CL now reconstruct a constant-size responsibility counter.
+
+The real introduced Find Me → HarmonicDB → Return path completed while
+HarmonicDB stayed networkless. A live proofless spoof, known-but-unintroduced
+sender, 1,000 strangers and an oversized body produced no additional recipient
+custody. Exact historical AC replay remains valid after standing expires; policy
+does not rewrite history.
+
+The one next maturation pressure is **Capability Compromise and Introduction
+Renewal**. A stolen valid capability can consume its full custody allowance, and
+rotation/termination must be learned without live identity dependency or mutated
+history.
+
 ## v1.0 — PORTER Reality Check
 
 PORTER/1's semantics are now frozen and its machine has been measured through

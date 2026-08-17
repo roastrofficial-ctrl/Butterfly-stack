@@ -21,7 +21,16 @@ services:
 
   porter-find-me:
     build: ./systems/porter
-    command: ["--identity", "find-me", "--ipc", "/ipc", "--routes", "{\"harmonicdb\":\"http://porter-harmonicdb:7070\"}"]
+    command:
+      - "--identity"
+      - "find-me"
+      - "--ipc"
+      - "/ipc"
+      - "--routes"
+      - '{"harmonicdb":"http://porter-harmonicdb:7070"}'
+      - "--require-introductions"
+      - "--relationships"
+      - '{"harmonicdb":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}'
     volumes: [porter-find-me-ipc:/ipc]
     networks: [porter-fabric]
     healthcheck:
@@ -32,7 +41,16 @@ services:
 
   porter-harmonicdb:
     build: ./systems/porter
-    command: ["--identity", "harmonicdb", "--ipc", "/ipc", "--routes", "{\"find-me\":\"http://porter-find-me:7070\"}"]
+    command:
+      - "--identity"
+      - "harmonicdb"
+      - "--ipc"
+      - "/ipc"
+      - "--routes"
+      - '{"find-me":"http://porter-find-me:7070"}'
+      - "--require-introductions"
+      - "--relationships"
+      - '{"find-me":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["hdbe.call"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}'
     volumes: [porter-harmonicdb-ipc:/ipc]
     networks: [porter-fabric]
     healthcheck:

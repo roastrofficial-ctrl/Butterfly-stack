@@ -2,6 +2,8 @@
 
 > Butterfly is a working computer ecosystem assembled from technologies whose histories never happened.
 
+| "It's just a website that tells your your approximate location"...but...
+
 Each subsystem began as an independent counterfactual experiment. Generation 0.4 makes them survive contact without erasing their boundaries: MailWeb carries application correspondence, Global Positioning Servers estimates location, HarmonicDB stores measurements, Technical Passport supplies holder identity, and Lucida supplies selective visual observation. Find Me is an independent application that consumes those public boundaries.
 
 ## Boot the machine
