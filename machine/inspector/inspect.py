@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, os
+import json, os, time
 from pathlib import Path
 from urllib.request import Request, urlopen
 
@@ -36,6 +36,7 @@ carriage_root = Path("/evidence/find-me/carriage")
 acceptance_root = Path("/evidence/harmonicdb/acceptances")
 collection_root = Path("/evidence/harmonicdb/collections/facts")
 application_root = Path("/evidence/harmonicdb-data/porter-application")
+round_root = Path("/evidence/find-me/rounds")
 works = []
 for path in work_root.glob("LW-*.json") if work_root.exists() else []:
     try: works.append(json.loads(path.read_text()))
@@ -84,3 +85,24 @@ if works:
         if "observation_latency_ms" in observation:
             print(f"CARRIAGE LATENCY              {observation.get('carriage_latency_ms', 'unknown')} ms")
             print(f"OBSERVATION LATENCY           {observation['observation_latency_ms']} ms")
+
+# A compact custody/resource view: enough to see pressure without pretending
+# the inspector is a monitoring system. Canonical facts and projections remain
+# visibly separate.
+resource_started = time.perf_counter()
+resource_roots = {
+    "LG FACTS": lodgement_root,
+    "AC FACTS": acceptance_root,
+    "CL FACTS": collection_root,
+    "TICKETS": ticket_root,
+    "INBOX PROJECTION": Path("/evidence/harmonicdb/inbox"),
+    "COLLECTED PROJECTION": Path("/evidence/harmonicdb/collected"),
+    "CARRIAGE KNOWLEDGE": carriage_root,
+    "ROUND JOURNALS": round_root,
+}
+print("\nPORTER RESOURCE VIEW")
+for label, root in resource_roots.items():
+    files = [path for path in root.rglob("*") if path.is_file()] if root.exists() else []
+    size = sum(path.stat().st_size for path in files)
+    print(f"{label:28} {len(files):7} files · {size:10} bytes")
+print(f"INSPECTOR RESOURCE SCAN        {(time.perf_counter() - resource_started) * 1000:.1f} ms")

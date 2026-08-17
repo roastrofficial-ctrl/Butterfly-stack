@@ -2,6 +2,29 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v1.0 — PORTER Reality Check
+
+PORTER/1's semantics are now frozen and its machine has been measured through
+10,000 facts, Tickets and dormant acceptances. The full evidence and method are
+in [`systems/porter/REALITY-CHECK.md`](systems/porter/REALITY-CHECK.md).
+
+The first stupid place was not immutable history alone. ROUNDS duplicated every
+observation into every mutable Ticket; healthy recovery re-entered materialisation
+for already-complete projections; and an unbounded diagnostic journal copied AC
+without adding knowledge. Removing those three duplications produced measured
+gains while LG, AC, CL, custody and Host initiation remained intact.
+
+Dormant custody remained linear at 10,000, but it created two files and about
+650 bytes per Package after optimisation. Inodes become pressure before memory.
+The live Butterfly journey showed the opposite of a misleading request latency:
+roughly 2.86 seconds was HDBE application execution, 1.11 seconds was later Host
+observation, and the final PORTER Round itself took about 3 milliseconds.
+
+The most urgent new pressure is unauthorised durable custody. A reachable sender
+can currently force AC, an inbox projection and arbitrary Package bytes. The one
+next maturation experiment is PORTER Introductions under adversarial lodgement;
+No Web Servers and Continuous Correspondence remain visible and unimplemented.
+
 ## v1.0 — PORTER Generation VI: Application Disposition
 
 Generation VI attempted a minimal generic `DS-…` fact and falsified it. Candidate
