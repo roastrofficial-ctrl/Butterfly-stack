@@ -68,6 +68,7 @@ if knowledge:
         processed = (application_root / f"{collection['collection']}.json").exists()
         print(f"CURRENT CUSTODY               RECIPIENT HOST · {collection['collection']}")
         print(f"APPLICATION REALITY           {'RECORDED SEPARATELY' if processed else 'UNKNOWN TO PORTER'}")
+        print("PORTER DISPOSITION            NOT REPRESENTED")
     elif remote_fact:
         legacy_collected = (Path("/evidence/harmonicdb/collected") / f"{carriage['package']}.json").exists()
         print(f"CURRENT CUSTODY               {'LEGACY COLLECTION — INDETERMINATE' if legacy_collected else 'RECIPIENT PORTER'}")

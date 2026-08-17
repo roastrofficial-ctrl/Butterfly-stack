@@ -2,6 +2,60 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## v1.0 — PORTER Generation VI: Application Disposition
+
+Generation VI attempted a minimal generic `DS-…` fact and falsified it. Candidate
+states `PROCESSED`, `COMPLETED`, `FAILED`, and `IGNORED` each admitted several
+incompatible definitions: code starting, parsing ending, effects occurring,
+transactions committing, recovery records surviving, or Returns being lodged.
+PORTER could not choose among them without learning HDBE or application semantics.
+
+Two contradictory disposition assertions over the same `CL` were equally valid
+as data and equally unverifiable as communications facts. A `DS` would therefore
+have copied a Host assertion while presenting it as PORTER knowledge. The
+experimental feature was removed; PORTER/1 gained no primitive.
+
+The crash matrix used real networkless HarmonicDB and interrupted after reading
+the Package, after the HDBE effect, after HarmonicDB's result record, after a
+stable Return draft, and after the Return crossed `LG`. The effect-before-record
+case was decisive: correspondence history was complete and recoverable, while
+HarmonicDB could not honestly determine from PORTER whether retrying the effect
+was safe. That ambiguity belongs to the application transaction and recovery
+model.
+
+Application-owned records made later stages recoverable. A retained result could
+avoid recomputation; a stable Return draft preserved Package identity; an
+existing Return Lodgement could be resolved after restart. None changed the
+parent Package's PORTER state. They were HarmonicDB recovery decisions followed
+by ordinary correspondence.
+
+A Return proves that another Package was lodged and declares an `in_reply_to`
+relationship. Success and failure Returns have identical PORTER force. Their
+meaning is payload protocol. Absence of a Return proves neither failure nor lack
+of processing.
+
+PORTER now ends explicitly at `CL`, where exact correspondence is recoverable in
+Host custody. The application exclusively owns semantic validation, computation,
+effects, transaction commit, application retry, recovery, completion and whether
+to lodge further correspondence. PORTER deliberately refused job status,
+workflow state, processing acknowledgement, exactly-once effects and Application
+Disposition.
+
+The unexpectedly elegant result was subtraction: `LG → AC → CL` remained enough.
+An application can connect two complete correspondence histories with
+`in_reply_to` without PORTER interpreting the connection. The difficult result
+was accepting that a durable database effect can be real while communications
+truth remains unchanged and silent.
+
+The historical lesson is:
+
+> **Correspondence ends where meaning begins.**
+
+No immediate PORTER Generation VII is required. PORTER has discovered the end of
+its primitive lifecycle. Butterfly's research horizon retains **No Web Servers**
+and **Continuous Correspondence**, but neither has earned this generation and
+neither is implemented.
+
 ## v0.9 — PORTER Generation V: Responsibility After Acceptance
 
 Custody survived, but only as a statement about recoverability and

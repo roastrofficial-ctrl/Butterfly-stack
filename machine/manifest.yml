@@ -1,11 +1,11 @@
 {
-  "machine": {"name": "Butterfly", "generation": "0.9"},
+  "machine": {"name": "Butterfly", "generation": "1.0"},
   "application": {"name": "Find Me", "health": "http://find-me:8000"},
   "systems": {
     "correspondence": {"implementation": "MailWeb", "status": "counterfactual", "health": "http://mailweb:9847/api/state"},
     "client": {"implementation": "Postbox", "status": "counterfactual", "health": "http://mailweb:9847/api/state"},
     "positioning": {"implementation": "Global Positioning Servers", "status": "counterfactual", "health": "http://gpservers:8090/health"},
-    "communications_boundary": {"implementation": "PORTER/1 Generation V", "status": "counterfactual", "health": "http://porter-harmonicdb:7070/health"},
+    "communications_boundary": {"implementation": "PORTER/1 Generation VI", "status": "counterfactual", "health": "http://porter-harmonicdb:7070/health"},
     "database": {"implementation": "HarmonicDB", "status": "counterfactual", "isolation": "no_direct_address"},
     "identity_verification": {"implementation": "Technical Passport Verifier", "status": "counterfactual", "health": "http://passport-verifier:8790/health"},
     "holder_identity": {"implementation": "Technical Passport Service", "status": "counterfactual", "health": "http://passport-service:8792/health"},

@@ -33,7 +33,7 @@ you more.** Stop only the source with `docker compose stop lucida`: existing
 canvases and local zoom remain, while a closer-Sight request fails without a
 raster fallback.
 
-## PORTER Generations I–V and ROUNDS
+## PORTER Generations I–VI and ROUNDS
 
 PORTER tests the Host Isolation Principle: computational Hosts are not directly
 network-addressable. They communicate locally with appointed Porters, which
@@ -51,6 +51,7 @@ python3 -m unittest -v
 ./tests/docker_generation3.sh
 ./tests/docker_generation4.sh
 ./tests/docker_generation5.sh
+./tests/docker_generation6.sh
 ```
 
 HarmonicDB is the first real Butterfly Host migrated behind a Porter. Its
@@ -91,6 +92,14 @@ from that fact. `LG`, `AC`, and `CL` remain historical; none is mutated into a
 global status. Collection transfers custody, not application meaning, and is not
 propagated back to the sender.
 
+Generation VI deliberately adds no PORTER primitive. A five-stage crash matrix
+moved from application read through HDBE effect, application record, Return draft
+and Return lodgement. No generic `DS-…` disposition could distinguish success,
+failure, completion or abandonment without interpreting application semantics.
+A Return proves only that related correspondence was lodged. PORTER now
+explicitly terminates at `CL`; applications own interpretation, effects,
+transactions, recovery and the decision to lodge further correspondence.
+
 ## Passport First Contact
 
 The v0.2 import fixture remains under `demo/passport` as an historical protocol
@@ -126,7 +135,7 @@ To exercise the vertical journey without the graphical renderer, use Postbox fro
 docker compose run --rm mailweb --transport smtp --timeout 180s mailweb://find-me.local/locate
 ```
 
-## Butterfly 0.7
+## Butterfly 1.0
 
 ```text
 ✓ MailWeb
