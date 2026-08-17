@@ -26,15 +26,19 @@ services:
       - "find-me"
       - "--ipc"
       - "/ipc"
-      - "--routes"
-      - '{"harmonicdb":"http://porter-harmonicdb:7070"}'
+      - "--native-listen"
+      - "0.0.0.0:7410"
+      - "--native-private-key"
+      - "UBeQbSAduo50Cr29r3fsdLbDxFJUekUJjegGOZyDVnI="
+      - "--native-rendezvous"
+      - '{"harmonicdb":{"host":"porter-harmonicdb","port":${PORTER_HARMONICDB_NATIVE_PORT:-9177},"public_key":"WKcwRcTpsgaQkFioIw3CRlZvCuI34HsM5/Pt1dKxDxw="}}'
       - "--require-introductions"
       - "--relationships"
       - '{"harmonicdb":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800,"ceremony_secret":"BUTTERFLY-PORTER-CEREMONY-1","ceremony_expires_at":4102444800,"ceremony_max_changes":16,"ceremony_max_pending":8,"ceremony_terms":{"kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}}'
     volumes: [porter-find-me-ipc:/ipc]
     networks: [porter-fabric]
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:7070/health',timeout=2).status == 200"]
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1',7410),2).close()"]
       interval: 3s
       timeout: 2s
       retries: 10
@@ -46,15 +50,19 @@ services:
       - "harmonicdb"
       - "--ipc"
       - "/ipc"
-      - "--routes"
-      - '{"find-me":"http://porter-find-me:7070"}'
+      - "--native-listen"
+      - "0.0.0.0:${PORTER_HARMONICDB_NATIVE_PORT:-9177}"
+      - "--native-private-key"
+      - "gCJ5zlYn6qqqbsrCcFsfWUOT5t6QPIifRUs7mNAt0Xg="
+      - "--native-rendezvous"
+      - '{"find-me":{"host":"porter-find-me","port":7410,"public_key":"YAQJYAprVfb6Q4vdAAZGOH4LO4wivIsSrxnjzanFFiI="}}'
       - "--require-introductions"
       - "--relationships"
       - '{"find-me":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["hdbe.call"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800,"ceremony_secret":"BUTTERFLY-PORTER-CEREMONY-1","ceremony_expires_at":4102444800,"ceremony_max_changes":16,"ceremony_max_pending":8,"ceremony_terms":{"kinds":["hdbe.call"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}}'
     volumes: [porter-harmonicdb-ipc:/ipc]
     networks: [porter-fabric]
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; assert urllib.request.urlopen('http://127.0.0.1:7070/health',timeout=2).status == 200"]
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1',${PORTER_HARMONICDB_NATIVE_PORT:-9177}),2).close()"]
       interval: 3s
       timeout: 2s
       retries: 10

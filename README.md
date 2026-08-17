@@ -78,6 +78,12 @@ crosses Host AC or CL. The real delayed experiment preserved attacker ACs made
 before recipient knowledge, refused the old capability after SC, and continued
 real HDBE through successor authority.
 
+PORTER 1.4 removes HTTP carriage from the real Find Me ↔ HarmonicDB path. Porters
+exchange mutually authenticated encrypted native Units; acceptance evidence and
+ceremony results return as separate carriage. HarmonicDB Porter moved from one
+rendezvous port to another while identity, standing, Hosts and application code
+remained unchanged.
+
 Generation III gives lodgement one atomic threshold. A canonical `LG-…` fact
 binds Package and Ticket identities before any recoverable projection is made;
 a restarted Porter can reconstruct missing Ticket, association and outgoing

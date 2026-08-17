@@ -723,6 +723,24 @@ unchanged; Visas and Entry Stamps remain unimplemented.
   with absence, and responses with tempting synchronous knowledge. Replacement
   secret confidentiality also needs a real protected Porter substrate.
 
+## PORTER 1.4: the network belongs to Porters
+
+- Assumption attacked: a URL and synchronous response were harmless
+  representations of Porter identity and acceptance evidence.
+- Resolution: native encrypted Units address stable Porter identities through a
+  separate rendezvous map. Package movement and evidence return are independent
+  durable journeys; connections carry no PORTER truth.
+- Security result: authenticated X25519/HKDF/AES-GCM framing binds sender,
+  recipient, Unit class and identity. Invalid frames create no facts and
+  incomplete readers are bounded.
+- Relocation result: HarmonicDB Porter moved from port 7411 to 9177 without one
+  byte of IN/SC history or Host/application configuration changing.
+- Cost: native median acceptance knowledge was 10.99 ms versus HTTP's 2.22 ms,
+  with substantially more durable projections and fsyncs. Conceptual honesty is
+  not yet operational efficiency.
+- Remaining pressure: rendezvous and public-key knowledge are static local
+  configuration. Their authenticated change and continuity are now exposed.
+
 ## Host dependency register
 
 | Dependency | Current host mechanism |

@@ -146,3 +146,11 @@ for root in introduction_roots:
     pending=list((ceremonies/"pending").glob("CM-*.json")) if ceremonies.exists() else []
     receipts=list((ceremonies/"receipts").glob("CM-*.json")) if ceremonies.exists() else []
     print(f"{'':12} {len(grants):3} ceremony grants · {len(lodged):3} originated · {len(results):3} recipient results · {len(pending):3} pending · {len(receipts):3} results known")
+    native=boundary/"native"
+    units=list((native/"outgoing").glob("CU-*.json")) if native.exists() else []
+    classes={}
+    for path in units:
+        try:
+            unit=json.loads(path.read_text());classes[unit["class"]]=classes.get(unit["class"],0)+1
+        except Exception:pass
+    print(f"{'':12} {len(units):3} native Units awaiting · {json.dumps(classes,sort_keys=True,separators=(',',':'))}")
