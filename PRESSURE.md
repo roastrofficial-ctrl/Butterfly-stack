@@ -741,6 +741,28 @@ unchanged; Visas and Entry Stamps remain unimplemented.
 - Remaining pressure: rendezvous and public-key knowledge are static local
   configuration. Their authenticated change and continuity are now exposed.
 
+## PORTER 1.5: movement became local authenticated knowledge
+
+- Assumption attacked: a manual endpoint/key map edit could stand in for learning
+  that the same Porter moved.
+- Resolution: immutable signed `RV` transitions chain from local genesis. A
+  separate continuity root authorises location and operational-key generations
+  without becoming correspondence standing or a live lookup service.
+- Failure result: stale carriage records only failure of one known approach and
+  retains the unchanged Unit. Signed evidence may arrive after the old endpoint
+  and key disappear, then existing work retries.
+- Security result: endpoint possession, DNS control, forged claims, substitution,
+  replay and out-of-order evidence cannot choose current identity. Valid root
+  equivocation suspends carriage.
+- Real result: Find Me survived location/key migration and a missed-evidence
+  variant, completed real HDBE Returns and a protected Standing Ceremony, while
+  HarmonicDB remained networkless and HTTP carriage remained absent.
+- Cost: retained authenticated lookup measured 750 ns median; 10,000 mixed
+  hostile attempts took 421 ms and created no files or bytes.
+- Remaining pressure: native carriage now handles identity, movement, standing,
+  responsibility and asynchronous evidence. Conventional web listeners around
+  isolated Hosts must finally justify themselves.
+
 ## Host dependency register
 
 | Dependency | Current host mechanism |

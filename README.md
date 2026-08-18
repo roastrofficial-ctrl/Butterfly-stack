@@ -84,6 +84,10 @@ ceremony results return as separate carriage. HarmonicDB Porter moved from one
 rendezvous port to another while identity, standing, Hosts and application code
 remained unchanged.
 
+PORTER 1.5 lets authenticated rendezvous and carriage-key knowledge move too.
+Signed `RV-…` chains preserve Porter identity across overlap and no-overlap
+movement without static-map edits, central discovery, or DNS-as-identity.
+
 Generation III gives lodgement one atomic threshold. A canonical `LG-…` fact
 binds Package and Ticket identities before any recoverable projection is made;
 a restarted Porter can reconstruct missing Ticket, association and outgoing

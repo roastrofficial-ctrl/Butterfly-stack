@@ -32,6 +32,8 @@ services:
       - "UBeQbSAduo50Cr29r3fsdLbDxFJUekUJjegGOZyDVnI="
       - "--native-rendezvous"
       - '{"harmonicdb":{"host":"porter-harmonicdb","port":${PORTER_HARMONICDB_NATIVE_PORT:-9177},"public_key":"WKcwRcTpsgaQkFioIw3CRlZvCuI34HsM5/Pt1dKxDxw="}}'
+      - "--continuity-authorities"
+      - '{"harmonicdb":"6BW8KupkfPEoaeChg8a7KVMRjr2DFLmhH3F8vLF6tys="}'
       - "--require-introductions"
       - "--relationships"
       - '{"harmonicdb":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800,"ceremony_secret":"BUTTERFLY-PORTER-CEREMONY-1","ceremony_expires_at":4102444800,"ceremony_max_changes":16,"ceremony_max_pending":8,"ceremony_terms":{"kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}}'
@@ -53,14 +55,16 @@ services:
       - "--native-listen"
       - "0.0.0.0:${PORTER_HARMONICDB_NATIVE_PORT:-9177}"
       - "--native-private-key"
-      - "gCJ5zlYn6qqqbsrCcFsfWUOT5t6QPIifRUs7mNAt0Xg="
+      - "${PORTER_HARMONICDB_NATIVE_PRIVATE_KEY:-gCJ5zlYn6qqqbsrCcFsfWUOT5t6QPIifRUs7mNAt0Xg=}"
       - "--native-rendezvous"
       - '{"find-me":{"host":"porter-find-me","port":7410,"public_key":"YAQJYAprVfb6Q4vdAAZGOH4LO4wivIsSrxnjzanFFiI="}}'
       - "--require-introductions"
       - "--relationships"
       - '{"find-me":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["hdbe.call"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800,"ceremony_secret":"BUTTERFLY-PORTER-CEREMONY-1","ceremony_expires_at":4102444800,"ceremony_max_changes":16,"ceremony_max_pending":8,"ceremony_terms":{"kinds":["hdbe.call"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}}'
     volumes: [porter-harmonicdb-ipc:/ipc]
-    networks: [porter-fabric]
+    networks:
+      porter-fabric:
+        aliases: [weird-new-container-thing]
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1',${PORTER_HARMONICDB_NATIVE_PORT:-9177}),2).close()"]
       interval: 3s
