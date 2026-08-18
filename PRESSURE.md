@@ -2,6 +2,25 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## NO WEB SERVERS — Host Runtime earned
+
+Find Me's real MailWeb → HDBE → ROUNDS journey now executes with
+`network_mode: none`, no application listener and direct MailWeb protocol
+dispatch into Laravel. Postbox and all remote responsibility belong to Porters;
+only a locally started `mailweb:porter` policy can inspect and explicitly
+collect correspondence. Host absence left a valid Package in Porter custody and
+executed no application code; local restart recovered it.
+
+The proof exposed a coherent cluster of newly ownerless responsibilities:
+local scheduling, warm versus episodic lifecycle, Round cadence, batching,
+graceful shutdown, crash injection, active-work tracking, resource limits and
+local concurrency. Persistent PHP costs roughly the same RSS as the old Laravel
+development listener but amortises a measured 43 ms Laravel bootstrap; trivial
+correspondence handling is much cheaper than that bootstrap. Batching is already
+attractive. The one next experiment is therefore **Host Runtime**, narrowly
+limited to those measured local lifecycle concerns. The full trial and fossil
+ledger are in [`NO-WEB-SERVERS.md`](NO-WEB-SERVERS.md).
+
 ## v1.1 — PORTER Introductions Under Adversarial Lodgement
 
 An identity string was not enough to protect AC. PORTER now establishes explicit,

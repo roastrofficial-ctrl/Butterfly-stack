@@ -31,12 +31,12 @@ services:
       - "--native-private-key"
       - "UBeQbSAduo50Cr29r3fsdLbDxFJUekUJjegGOZyDVnI="
       - "--native-rendezvous"
-      - '{"harmonicdb":{"host":"porter-harmonicdb","port":${PORTER_HARMONICDB_NATIVE_PORT:-9177},"public_key":"WKcwRcTpsgaQkFioIw3CRlZvCuI34HsM5/Pt1dKxDxw="}}'
+      - '{"harmonicdb":{"host":"porter-harmonicdb","port":${PORTER_HARMONICDB_NATIVE_PORT:-9177},"public_key":"WKcwRcTpsgaQkFioIw3CRlZvCuI34HsM5/Pt1dKxDxw="},"postbox":{"host":"porter-postbox","port":7420,"public_key":"rcEohxE5gxk6CSYw2pipoSn4X62YaPNFpk15apGC1B8="}}'
       - "--continuity-authorities"
       - '{"harmonicdb":"6BW8KupkfPEoaeChg8a7KVMRjr2DFLmhH3F8vLF6tys="}'
       - "--require-introductions"
       - "--relationships"
-      - '{"harmonicdb":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800,"ceremony_secret":"BUTTERFLY-PORTER-CEREMONY-1","ceremony_expires_at":4102444800,"ceremony_max_changes":16,"ceremony_max_pending":8,"ceremony_terms":{"kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}}}'
+      - '{"harmonicdb":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800,"ceremony_secret":"BUTTERFLY-PORTER-CEREMONY-1","ceremony_expires_at":4102444800,"ceremony_max_changes":16,"ceremony_max_pending":8,"ceremony_terms":{"kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}},"postbox":{"secret":"BUTTERFLY-MAILWEB-PORTER-1","authority":"local-postbox-correspondence","kinds":["mailweb.request"],"max_package_bytes":1048576,"max_outstanding_packages":100,"max_outstanding_bytes":33554432,"expires_at":4102444800}}'
     volumes: [porter-find-me-ipc:/ipc]
     networks: [porter-fabric]
     healthcheck:
@@ -67,6 +67,30 @@ services:
         aliases: [weird-new-container-thing]
     healthcheck:
       test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1',${PORTER_HARMONICDB_NATIVE_PORT:-9177}),2).close()"]
+      interval: 3s
+      timeout: 2s
+      retries: 10
+
+  porter-postbox:
+    build: ./systems/porter
+    command:
+      - "--identity"
+      - "postbox"
+      - "--ipc"
+      - "/ipc"
+      - "--native-listen"
+      - "0.0.0.0:7420"
+      - "--native-private-key"
+      - "2KPllIBigYxx8a7wCi3V/YgrpiTMBv9R6K4m30hJQV0="
+      - "--native-rendezvous"
+      - '{"find-me":{"host":"porter-find-me","port":7410,"public_key":"YAQJYAprVfb6Q4vdAAZGOH4LO4wivIsSrxnjzanFFiI="}}'
+      - "--require-introductions"
+      - "--relationships"
+      - '{"find-me":{"secret":"BUTTERFLY-MAILWEB-PORTER-1","authority":"local-postbox-correspondence","kinds":["mailweb.return"],"max_package_bytes":1048576,"max_outstanding_packages":100,"max_outstanding_bytes":33554432,"expires_at":4102444800}}'
+    volumes: [porter-postbox-ipc:/ipc]
+    networks: [porter-fabric]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1',7420),2).close()"]
       interval: 3s
       timeout: 2s
       retries: 10
@@ -109,38 +133,22 @@ services:
     build:
       context: .
       dockerfile: apps/find-me/Dockerfile
-    environment: &publisher-environment
+    environment:
       APP_ENV: local
       APP_DEBUG: "false"
       APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
       LOG_CHANNEL: stderr
-      GPSERVERS_URL: http://gpservers:8090
-      HARMONICDB_URL: http://harmonicdb:8787
       HARMONICDB_TIMEOUT: "150"
       PORTER_IPC: /porter
       FIND_ME_WORK_DIR: /app-state/location
-      PASSPORT_VERIFIER_URL: http://passport-verifier:8790
-      LUCIDA_URL: http://lucida:8077
-      MAILWEB_MAILPIT_URL: http://mailpit:8025
-      MAILWEB_SMTP_HOST: mailpit
-      MAILWEB_SMTP_PORT: "1025"
-      MAILWEB_PUBLISHER_MAILBOX: find-me@butterfly.local
     depends_on:
       find-me-state:
         condition: service_completed_successfully
       porter-find-me:
         condition: service_healthy
-      lucida:
-        condition: service_healthy
-      gpservers:
-        condition: service_healthy
       harmonicdb:
         condition: service_healthy
-      passport-verifier:
-        condition: service_healthy
-      mailpit:
-        condition: service_healthy
-    networks: [butterfly]
+    network_mode: none
     volumes: [porter-find-me-ipc:/porter, find-me-work:/app-state]
     healthcheck:
       test: ["CMD", "php", "artisan", "find-me:health"]
@@ -148,43 +156,46 @@ services:
       timeout: 3s
       retries: 12
 
-  find-me-worker:
+  postbox-porter-host:
     build:
       context: .
-      dockerfile: apps/find-me/Dockerfile
-    command: ["php", "artisan", "mailweb:listen"]
-    environment: *publisher-environment
+      dockerfile: machine/postbox/PorterBridge.Dockerfile
+    environment:
+      MAILWEB_FILE_ROOT: /mailweb-ipc
+      PORTER_IPC: /porter
     depends_on:
-      find-me:
-        condition: service_healthy
-      mailpit:
-        condition: service_healthy
-    networks: [butterfly]
-    volumes: [porter-find-me-ipc:/porter, find-me-work:/app-state]
+      porter-postbox: {condition: service_healthy}
+      porter-find-me: {condition: service_healthy}
+    volumes: [porter-postbox-ipc:/porter, postbox-mailweb-ipc:/mailweb-ipc]
+    network_mode: none
 
   mailweb:
     build:
       context: .
       dockerfile: machine/postbox/Dockerfile
-    command: ["--transport", "smtp", "--timeout", "180s", "--ui", "--listen", "0.0.0.0:9847", "mailweb://find-me.local/"]
+    command: ["--transport", "file", "--timeout", "180s", "--ui", "--listen", "0.0.0.0:9847", "mailweb://find-me.local/"]
     environment:
       MAILWEB_SMTP_ADDRESS: mailpit:1025
       MAILWEB_MAILPIT_URL: http://mailpit:8025
       MAILWEB_PUBLISHER_MAILBOX: find-me@butterfly.local
       MAILWEB_PUBLISHER_MAP: find-me.local=find-me@butterfly.local,passport.local=passport-office@butterfly.local
       MAILWEB_CONTAINER_LISTEN: "true"
+      MAILWEB_FILE_ROOT: /mailweb-ipc
     ports:
       - "127.0.0.1:${MAILWEB_PORT:-9847}:9847"
     depends_on:
       lucida:
         condition: service_healthy
-      find-me-worker:
+      find-me:
+        condition: service_started
+      postbox-porter-host:
         condition: service_started
       passport-office-worker:
         condition: service_started
       mailpit:
         condition: service_healthy
     networks: [butterfly]
+    volumes: [postbox-mailweb-ipc:/mailweb-ipc]
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:9847/api/state"]
       interval: 5s
@@ -325,5 +336,7 @@ volumes:
   passport-trust:
   porter-find-me-ipc:
   porter-harmonicdb-ipc:
+  porter-postbox-ipc:
+  postbox-mailweb-ipc:
   find-me-work:
   lucida-prepared:

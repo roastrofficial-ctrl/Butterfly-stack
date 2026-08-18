@@ -164,6 +164,37 @@ MailWeb::get('/stack', function () use ($site) {
             ->button('Put the stack to work', '/locate', 'prominent'));
 });
 
+MailWeb::get('/no-web-servers', function (MailWebRequest $request) use ($site) {
+    try {
+        $ticketId = (string)$request->query('ticket');
+        $correspondence = new HarmonicCorrespondence;
+        if ($ticketId === '') {
+            $ticket = $correspondence->lodge('info', []);
+            return MailWeb::page('Find Me — no web servers', 202)->template($site)->slot('content', MailWeb::page('No web servers')
+                ->heading('THE HOST LEFT THE WEB', variant: 'display')
+                ->paragraph('This MailWeb request arrived as a native PORTER Package. Find Me explicitly collected it during a locally scheduled execution, then lodged real HarmonicDB correspondence.')
+                ->paragraph("HDBE Package {$ticket['package']} · Collection Ticket {$ticket['ticket']} · Lodgement {$ticket['lodgement']}")
+                ->revisit('/no-web-servers?ticket=' . $ticket['ticket'], 650)
+                ->button('Make a local Round', '/no-web-servers?ticket=' . $ticket['ticket'], 'prominent'));
+        }
+        $round = $correspondence->makeRound([$ticketId]);
+        if ($round['observations'][0]['state'] !== 'RETURN_HELD') {
+            return MailWeb::page('Find Me — Host attention', 202)->template($site)->slot('content', MailWeb::page('Host attention')
+                ->heading('THE HOST MADE A ROUND', variant: 'display')
+                ->paragraph("Round {$round['round']} observed {$round['observations'][0]['state']}. Nothing on the network invoked this execution.")
+                ->revisit('/no-web-servers?ticket=' . $ticketId, 650));
+        }
+        $result = $correspondence->collect($ticketId);
+        return MailWeb::page('Find Me — served without a web server')->template($site)->slot('content', MailWeb::page('Verdict')
+            ->heading('SERVED WITHOUT A WEB SERVER', variant: 'display')
+            ->paragraph('Postbox → Porter → networkless Find Me Host → Porter → networkless HarmonicDB Host → Return.')
+            ->paragraph("Round {$round['round']} · HDBE {$result['envelope']['protocol']} · Collection {$result['collection']}")
+            ->paragraph('Laravel booted as a local Host process. No HTTP Request object, web session, cookie, CSRF token, redirect, PHP-FPM worker, or application listener participated.'));
+    } catch (Throwable $error) {
+        return MailWeb::page('No-webserver trial failed', 503)->heading('TRIAL COULD NOT CONTINUE')->paragraph(mb_substr($error->getMessage(), 0, 300));
+    }
+});
+
 MailWeb::get('/locate', function (MailWebRequest $request) use ($site) {
     $journey = 'BF:' . substr($request->id(), -12);
     try {

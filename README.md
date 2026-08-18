@@ -1,5 +1,7 @@
 # Butterfly
 
+The current experiment runs a genuine Find Me MailWeb → HarmonicDB journey with the Find Me application Host fully networkless and without an application webserver. See [NO-WEB-SERVERS.md](NO-WEB-SERVERS.md) for the trial, evidence, performance baseline, fossil ledger and verdict.
+
 > Butterfly is a working computer ecosystem assembled from technologies whose histories never happened.
 
 | "It's just a website that tells your your approximate location"...but...
