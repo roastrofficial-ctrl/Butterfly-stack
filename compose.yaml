@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: machine/porter/HarmonicDB.Dockerfile
-    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; test -f /data/find-me-private-symbol.hws || python -m harmonic model-demo /data/find-me-private-symbol.hws --dataset find-me-private; exec harmonic-host"]
+    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; test -f /data/find-me-private-symbol.hws || python -m harmonic model-demo /data/find-me-private-symbol.hws --dataset find-me-private; exec porter-host-runtime --host harmonicdb --kind hdbe.call --batch-size 25 --idle-ms 50 --adapter harmonic-adapter"]
     volumes:
       - harmonicdb-data:/data
       - porter-harmonicdb-ipc:/porter
