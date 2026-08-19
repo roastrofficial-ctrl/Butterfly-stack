@@ -1,11 +1,12 @@
 # Butterfly
 
-The current experiment makes locally chosen Host attention cheap without making
-arrival powerful. A single disposable candidate projection lets the unchanged
-Host Runtime find relevant work without scanning all Porter custody. See
-[INDEXED-ATTENTION-CHECK.md](INDEXED-ATTENTION-CHECK.md) for the causality proof,
-measurements, corruption matrix and verdict; [HOST-RUNTIME-PRESSURE.md](HOST-RUNTIME-PRESSURE.md)
-records the preceding runtime experiment.
+The current experiment gives disposable candidate knowledge durability weaker
+than canonical truth without permitting silent starvation. Grouped WAL reduced
+the controlled AC tax to 1.6%; Porter restart reconstructs AC minus CL before
+the projection can be trusted. See
+[CANDIDATE-PROJECTION-DURABILITY.md](CANDIDATE-PROJECTION-DURABILITY.md) for the
+crash matrix, measurements and verdict; [INDEXED-ATTENTION-CHECK.md](INDEXED-ATTENTION-CHECK.md)
+records the preceding attention experiment.
 
 > Butterfly is a working computer ecosystem assembled from technologies whose histories never happened.
 

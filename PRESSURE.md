@@ -2,6 +2,23 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## Candidate Projection Durability — projection cheap enough to lose
+
+Canonical AC remains unchanged. `PORTER-CANDIDATES/1` now uses grouped WAL
+durability: candidate updates are transactionally visible to a running Porter,
+but recent projection state may be lost with a machine crash. Porter restart
+rebuilds AC minus CL before service; detected live update failure removes the
+whole projection so a chosen inspection repairs rather than trusts a partial
+view. No generation, high-water marker or second acceptance fact was added.
+
+In the controlled run, median AC cost was 1.974 ms without an index, 2.935 ms
+with FULL candidate durability and 2.006 ms grouped. Empty/one attention among
+10,000 measured 0.295/1.338 ms. Cold rebuild still took 42.989 seconds, of which
+42.965 seconds was canonical filesystem enumeration and only 20.7 ms candidate
+construction. Full evidence is in
+[`CANDIDATE-PROJECTION-DURABILITY.md`](CANDIDATE-PROJECTION-DURABILITY.md). The
+exactly one next experiment is **Canonical History Enumeration**.
+
 ## Indexed Local Attention — cheap looking without powerful arrival
 
 The Runtime's former empty lookup read every Package in current custody. At
