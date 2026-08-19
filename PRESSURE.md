@@ -2,6 +2,26 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## Indexed Local Attention — cheap looking without powerful arrival
+
+The Runtime's former empty lookup read every Package in current custody. At
+10,000 items that cost 2,507.174 ms median; one relevant item cost 2,174.287 ms.
+One disposable `PORTER-CANDIDATES/1` SQLite projection now stores only Package
+identity and opaque Kind. The corresponding indexed costs were 0.927 ms and
+2.005 ms. Projection storage was 602,112 bytes and one inode at 10,000.
+
+The causal proof stopped HarmonicDB, accepted a real HDBE Package and observed
+the candidate row appear while the Host remained absent and CL remained
+unchanged. Only independent local startup caused a 1.264 ms indexed inspection,
+canonical Collection and HDBE Return. No watcher, signal, socket, callback or
+notification path exists. The unchanged Find Me journey again concluded
+**SERVED WITHOUT A WEB SERVER**.
+
+The cost moved honestly: AC median rose from 2.108 to 3.462 ms and cold rebuild
+at 10,000 took 44.5 seconds. Full evidence is in
+[`INDEXED-ATTENTION-CHECK.md`](INDEXED-ATTENTION-CHECK.md). The exactly one next
+experiment is **Candidate Projection Durability**.
+
 ## Host Runtime — useful substrate earned
 
 One unchanged, single-threaded runtime now operates both real networkless Hosts

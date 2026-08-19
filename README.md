@@ -1,10 +1,11 @@
 # Butterfly
 
-The current experiment has earned a minimal shared PORTER Host Runtime. One
-unchanged runtime operates networkless Find Me and HarmonicDB without learning
-MailWeb or HDBE semantics. See [HOST-RUNTIME-PRESSURE.md](HOST-RUNTIME-PRESSURE.md)
-for the lifecycle boundary, rendezvous recovery, workloads, crash cases and
-verdict; [NO-WEB-SERVERS.md](NO-WEB-SERVERS.md) remains the preceding proof.
+The current experiment makes locally chosen Host attention cheap without making
+arrival powerful. A single disposable candidate projection lets the unchanged
+Host Runtime find relevant work without scanning all Porter custody. See
+[INDEXED-ATTENTION-CHECK.md](INDEXED-ATTENTION-CHECK.md) for the causality proof,
+measurements, corruption matrix and verdict; [HOST-RUNTIME-PRESSURE.md](HOST-RUNTIME-PRESSURE.md)
+records the preceding runtime experiment.
 
 > Butterfly is a working computer ecosystem assembled from technologies whose histories never happened.
 
