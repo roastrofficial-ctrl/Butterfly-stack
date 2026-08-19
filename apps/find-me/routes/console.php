@@ -21,8 +21,22 @@ Artisan::command('mailweb:adapter', function () {
         file_put_contents($temporary, json_encode($value, JSON_THROW_ON_ERROR), LOCK_EX);
         rename($temporary, $path);
     };
+    $containsRevisit = static function (mixed $value) use (&$containsRevisit): bool {
+        if (!is_array($value)) return false;
+        if (($value['type'] ?? null) === 'revisit') return true;
+        foreach ($value as $nested) if ($containsRevisit($nested)) return true;
+        return false;
+    };
+
+    fwrite(STDOUT, json_encode([
+        'contract' => 'PORTER-HOST-ADAPTER/1',
+        'runtime_observation' => 'ADAPTER_READY',
+    ], JSON_THROW_ON_ERROR) . "\n");
+    fflush(STDOUT);
+    $dispatchCount = 0;
 
     while (($line = fgets(STDIN)) !== false) {
+        $dispatchCount++;
         $dispatch = json_decode($line, true, flags: JSON_THROW_ON_ERROR);
         if (($dispatch['contract'] ?? null) !== 'PORTER-HOST-ADAPTER/1') {
             throw new RuntimeException('Unsupported Host Runtime adapter contract');
@@ -36,6 +50,7 @@ Artisan::command('mailweb:adapter', function () {
         $disposition = is_file($dispositionPath)
             ? json_decode((string) file_get_contents($dispositionPath), true)
             : ['package' => $package['package'], 'collection' => $fact['collection'], 'state' => 'COLLECTED'];
+        $nextVisitMs = 250;
         if (($disposition['state'] ?? null) !== 'RETURN_LODGED') {
             if (($disposition['state'] ?? null) === 'HANDLED') {
                 $response = $disposition['response'];
@@ -45,6 +60,7 @@ Artisan::command('mailweb:adapter', function () {
                 $disposition['response'] = $response;
                 $writeDisposition($dispositionPath, $disposition);
             }
+            $nextVisitMs = $containsRevisit($response) ? 10 : 250;
             $ticket = $client->deposit('postbox', 'mailweb.return', ['response' => $response], 300, $package['package']);
             $disposition['state'] = 'RETURN_LODGED';
             $disposition['return_package'] = $ticket['package'];
@@ -52,10 +68,17 @@ Artisan::command('mailweb:adapter', function () {
             unset($disposition['response']);
             $writeDisposition($dispositionPath, $disposition);
         }
+        $crashAfter = (int) env('PORTER_EXPERIMENT_CRASH_AFTER_DISPATCHES', 0);
+        $crashMarker = $workRoot . '/runtime-adapter-crash-once';
+        if ($crashAfter === $dispatchCount && !is_file($crashMarker)) {
+            file_put_contents($crashMarker, $fact['collection'] . "\n", LOCK_EX);
+            throw new RuntimeException('Host Runtime experiment adapter death before control return');
+        }
         fwrite(STDOUT, json_encode([
             'contract' => 'PORTER-HOST-ADAPTER/1',
             'dispatch' => $dispatch['dispatch'],
             'runtime_observation' => 'ADAPTER_RETURNED_CONTROL',
+            'next_visit_ms' => $nextVisitMs,
         ], JSON_THROW_ON_ERROR) . "\n");
         fflush(STDOUT);
     }

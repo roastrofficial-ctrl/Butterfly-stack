@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: machine/porter/HarmonicDB.Dockerfile
-    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; test -f /data/find-me-private-symbol.hws || python -m harmonic model-demo /data/find-me-private-symbol.hws --dataset find-me-private; exec porter-host-runtime --host harmonicdb --kind hdbe.call --batch-size 25 --idle-ms 50 --adapter harmonic-adapter"]
+    command: ["sh", "-c", "test -f /data/find-me.hws || python -m harmonic model-demo /data/find-me.hws --dataset find-me; test -f /data/find-me-private-symbol.hws || python -m harmonic model-demo /data/find-me-private-symbol.hws --dataset find-me-private; exec porter-host-runtime --host harmonicdb --kind hdbe.call --batch-size 25 --idle-ms 50 --min-idle-ms 25 --max-idle-ms 500 --adapter harmonic-adapter"]
     volumes:
       - harmonicdb-data:/data
       - porter-harmonicdb-ipc:/porter
@@ -33,7 +33,7 @@ services:
       - "--native-rendezvous"
       - '{"harmonicdb":{"host":"porter-harmonicdb","port":${PORTER_HARMONICDB_NATIVE_PORT:-9177},"public_key":"WKcwRcTpsgaQkFioIw3CRlZvCuI34HsM5/Pt1dKxDxw="},"postbox":{"host":"porter-postbox","port":7420,"public_key":"rcEohxE5gxk6CSYw2pipoSn4X62YaPNFpk15apGC1B8="}}'
       - "--continuity-authorities"
-      - '{"harmonicdb":"6BW8KupkfPEoaeChg8a7KVMRjr2DFLmhH3F8vLF6tys="}'
+      - '{"harmonicdb":"Evm7lr703vhH6zmadUJGSUxs+u6i8ummogyR250+BDI="}'
       - "--require-introductions"
       - "--relationships"
       - '{"harmonicdb":{"secret":"BUTTERFLY-PORTER-INTRODUCTION-1","authority":"technical-passport:offline-claim","kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800,"ceremony_secret":"BUTTERFLY-PORTER-CEREMONY-1","ceremony_expires_at":4102444800,"ceremony_max_changes":16,"ceremony_max_pending":8,"ceremony_terms":{"kinds":["porter.return"],"max_package_bytes":262144,"max_outstanding_packages":1000,"max_outstanding_bytes":67108864,"expires_at":4102444800}},"postbox":{"secret":"BUTTERFLY-MAILWEB-PORTER-1","authority":"local-postbox-correspondence","kinds":["mailweb.request"],"max_package_bytes":1048576,"max_outstanding_packages":100,"max_outstanding_bytes":33554432,"expires_at":4102444800}}'

@@ -1,6 +1,10 @@
 # Butterfly
 
-The current experiment runs a genuine Find Me MailWeb → HarmonicDB journey with the Find Me application Host fully networkless and without an application webserver. See [NO-WEB-SERVERS.md](NO-WEB-SERVERS.md) for the trial, evidence, performance baseline, fossil ledger and verdict.
+The current experiment has earned a minimal shared PORTER Host Runtime. One
+unchanged runtime operates networkless Find Me and HarmonicDB without learning
+MailWeb or HDBE semantics. See [HOST-RUNTIME-PRESSURE.md](HOST-RUNTIME-PRESSURE.md)
+for the lifecycle boundary, rendezvous recovery, workloads, crash cases and
+verdict; [NO-WEB-SERVERS.md](NO-WEB-SERVERS.md) remains the preceding proof.
 
 > Butterfly is a working computer ecosystem assembled from technologies whose histories never happened.
 

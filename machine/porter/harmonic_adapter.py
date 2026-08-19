@@ -22,6 +22,7 @@ service = HDBEService(
         "find_me_private": "/data/find-me-private-symbol.hws",
     }
 )
+dispatch_count = 0
 
 
 def experimental_crash(point, collection):
@@ -132,17 +133,36 @@ def handle(fact):
     )
 
 
+sys.stdout.write(
+    json.dumps(
+        {
+            "contract": "PORTER-HOST-ADAPTER/1",
+            "runtime_observation": "ADAPTER_READY",
+        },
+        separators=(",", ":"),
+    )
+    + "\n"
+)
+sys.stdout.flush()
+
 for line in sys.stdin:
+    dispatch_count += 1
     dispatch = json.loads(line)
     if dispatch.get("contract") != "PORTER-HOST-ADAPTER/1":
         raise SystemExit("unsupported Host Runtime adapter contract")
     handle(dispatch["collection"])
+    crash_after = int(os.getenv("PORTER_EXPERIMENT_CRASH_AFTER_DISPATCHES", "0"))
+    crash_marker = application / "runtime-adapter-crash-once"
+    if crash_after == dispatch_count and not crash_marker.exists():
+        crash_marker.write_text(dispatch["collection"]["collection"] + "\n")
+        raise SystemExit("Host Runtime experiment adapter death before control return")
     sys.stdout.write(
         json.dumps(
             {
                 "contract": "PORTER-HOST-ADAPTER/1",
                 "dispatch": dispatch["dispatch"],
                 "runtime_observation": "ADAPTER_RETURNED_CONTROL",
+                "next_visit_ms": 50,
             },
             separators=(",", ":"),
         )

@@ -2,6 +2,28 @@
 
 These are evolutionary pressures exposed when the three systems met, not automatically defects.
 
+## Host Runtime — useful substrate earned
+
+One unchanged, single-threaded runtime now operates both real networkless Hosts
+through a tiny JSON-lines adapter boundary. Find Me retains MailWeb, ROUNDS and
+continuation; HarmonicDB retains HDBE effects, recovery and Return meaning. The
+runtime owns only local inspection, explicit Collection, bounded batches, warm
+adapter lifetime, bounded attention and shutdown. `ADAPTER_RETURNED_CONTROL` is
+operational evidence, never application disposition.
+
+Authenticated PORTER 1.5 continuity restored rendezvous knowledge and resumed an
+already-lodged Package byte-for-byte. Its later expiry refusal was preserved as
+PORTER truth rather than misreported as runtime failure. Real mid-batch crashes
+in both adapters recovered all ten unchanged Package identities. A fresh
+Postbox → Find Me → HarmonicDB → Return → later Round journey again concluded
+**SERVED WITHOUT A WEB SERVER**.
+
+The measured single stream sustained roughly 109–111 Packages/s under a 500
+Package backlog. Larger batches flattened or regressed, so runtime concurrency
+was not earned. The full evidence is in
+[`HOST-RUNTIME-PRESSURE.md`](HOST-RUNTIME-PRESSURE.md). The exactly one next
+experiment is **indexed local attention**, without concurrency or product scope.
+
 ## NO WEB SERVERS — Host Runtime earned
 
 Find Me's real MailWeb → HDBE → ROUNDS journey now executes with

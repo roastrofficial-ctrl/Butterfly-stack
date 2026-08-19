@@ -21,4 +21,4 @@ RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/fra
     && chown -R www-data:www-data storage bootstrap/cache
 
 USER www-data
-CMD ["porter-host-runtime", "--host", "find-me", "--kind", "mailweb.request", "--batch-size", "10", "--idle-ms", "100", "--adapter", "php artisan mailweb:adapter"]
+CMD ["porter-host-runtime", "--host", "find-me", "--kind", "mailweb.request", "--batch-size", "10", "--idle-ms", "250", "--min-idle-ms", "10", "--max-idle-ms", "1000", "--adapter", "php artisan mailweb:adapter"]
